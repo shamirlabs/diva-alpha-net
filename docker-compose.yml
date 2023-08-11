@@ -1,0 +1,91 @@
+version: '3.8'
+
+services:
+
+  diva:
+    image: diva/diva:v23.8.5
+    platform: linux/amd64
+    container_name: diva
+    hostname: diva
+    restart: unless-stopped
+    command:
+      - '--db=/opt/diva/data/diva.db'
+      - '--w3s-address=0.0.0.0'
+      - '--execution-client-url=ws://127.0.0.1:8546' # Change this (execution RPC WebSocket, geth example)
+      - '--consensus-client-url=http://127.0.0.1:3500' # Change this (consensus REST API, prysm example)
+      - '--tracing'
+      - '--log-level=debug'
+      - '--contract=0xf73280D617AB4BDff2558adcD1a1659ccD1B4fF9'
+      - '--master-key=changeThis' # Change this (API key for the operator UI)
+    environment:
+      - DIVA_VAULT_PASSWORD=vaultPassword # Change this (password for the encrypted vault)
+      - OTEL_EXPORTER_JAEGER_AGENT_HOST=jaeger
+      - OTEL_EXPORTER_JAEGER_AGENT_PORT=6831
+    volumes:
+      - ./.diva/data/:/opt/diva/data/
+    ports:
+      - 127.0.0.1:9000:9000
+      - 5050:5050
+      - 30000:30000
+
+  validator:
+    image: gcr.io/prysmaticlabs/prysm/validator:v4.0.7
+    platform: linux/amd64
+    container_name: validator
+    hostname: validator
+    restart: unless-stopped
+    command:
+      [
+        "--accept-terms-of-use",
+        "--beacon-rpc-provider=127.0.0.1:4000", # Change this (consensus RPC, prysm example)
+        "--monitoring-host=0.0.0.0",
+        "--validators-external-signer-public-keys=http://diva:9000/api/v1/eth2/publicKeys",
+        "--validators-external-signer-url=http://diva:9000",
+        "--web",
+        "--wallet-dir=/jwt",
+        "--grpc-gateway-host=0.0.0.0",
+      ]
+    volumes:
+      - ./prysm/validator/config:/config
+      - ./prysm/validator/data/validator:/data
+      - ./prysm/validator/jwt:/jwt
+    ports:
+      - 127.0.0.1:7500:7500
+
+  reloader:
+    image: diva/reloader:v23.8.0
+    platform: linux/amd64
+    container_name: reloader
+    hostname: reloader
+    restart: unless-stopped
+    volumes:
+      - ./prysm/validator/jwt:/jwt
+    environment:
+      - VALIDATOR_RKM_API=http://validator:7500
+      - DIVA_W3S_API=http://diva:9000
+      - SYNC_PERIOD=600
+
+  operator-ui:
+    image: diva/operator-ui:v23.8.0
+    platform: linux/amd64
+    container_name: operator-ui
+    restart: unless-stopped
+    ports:
+      - 80:80
+
+  # Telemetry configuration
+  jaeger:
+    image: diva/jaeger:v23.8.0
+    platform: linux/amd64
+    container_name: jaeger
+    restart: unless-stopped
+
+  vector:
+    image: diva/vector:v23.8.0
+    platform: linux/amd64
+    container_name: vector
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - USERNAME=username-address # Change this (recommended to username of the operator and ethereum address)

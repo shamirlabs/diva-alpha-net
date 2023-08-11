@@ -1,0 +1,185 @@
+version: '3.8'
+
+services:
+
+  diva:
+    image: diva/diva:v23.8.5
+    platform: linux/amd64
+    container_name: diva
+    hostname: diva
+    restart: unless-stopped
+    command:
+      - '--db=/opt/diva/data/diva.db'
+      - '--w3s-address=0.0.0.0'
+      - '--execution-client-url=ws://geth:8546'
+      - '--consensus-client-url=http://beacon:3500'
+      - '--tracing'
+      - '--log-level=debug'
+      - '--contract=0xf73280D617AB4BDff2558adcD1a1659ccD1B4fF9'
+      - '--master-key=changeThis' # Change this (API key for the operator UI)
+    environment:
+      - DIVA_VAULT_PASSWORD=vaultPassword # Change this (password for the encrypted vault)
+      - OTEL_EXPORTER_JAEGER_AGENT_HOST=jaeger
+      - OTEL_EXPORTER_JAEGER_AGENT_PORT=6831
+    volumes:
+      - ./.diva/data/:/opt/diva/data/
+    ports:
+      - 127.0.0.1:9000:9000
+      - 5050:5050
+      - 30000:30000
+
+  validator:
+    image: gcr.io/prysmaticlabs/prysm/validator:v4.0.7
+    platform: linux/amd64
+    container_name: validator
+    hostname: validator
+    restart: unless-stopped
+    command:
+      [
+        "--accept-terms-of-use",
+        "--beacon-rpc-provider=beacon:4000",
+        "--monitoring-host=0.0.0.0",
+        "--validators-external-signer-public-keys=http://diva:9000/api/v1/eth2/publicKeys",
+        "--validators-external-signer-url=http://diva:9000",
+        "--web",
+        "--wallet-dir=/jwt",
+        "--grpc-gateway-host=0.0.0.0",
+      ]
+    volumes:
+      - ./prysm/validator/config:/config
+      - ./prysm/validator/data/validator:/data
+      - ./prysm/validator/jwt:/jwt
+    ports:
+      - 127.0.0.1:7500:7500
+
+  reloader:
+    image: diva/reloader:v23.8.0
+    platform: linux/amd64
+    container_name: reloader
+    hostname: reloader
+    restart: unless-stopped
+    volumes:
+      - ./prysm/validator/jwt:/jwt
+    environment:
+      - VALIDATOR_RKM_API=http://validator:7500
+      - DIVA_W3S_API=http://diva:9000
+      - SYNC_PERIOD=600
+
+  operator-ui:
+    image: diva/operator-ui:v23.8.0
+    platform: linux/amd64
+    container_name: operator-ui
+    restart: unless-stopped
+    ports:
+      - 80:80
+
+  # Telemetry configuration
+  jaeger:
+    image: diva/jaeger:v23.8.0
+    platform: linux/amd64
+    container_name: jaeger
+    restart: unless-stopped
+
+  vector:
+    image: diva/vector:v23.8.0
+    platform: linux/amd64
+    container_name: vector
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - USERNAME=username-address # Change this (recommended to username of the operator and node address)
+
+  # Ethereum clients
+  geth:
+    image: ethereum/client-go:v1.12.1
+    container_name: geth
+    restart: unless-stopped
+    stop_grace_period: 1m
+    command:
+      [
+        "--goerli",
+        "--http",
+        "--http.api=eth,net,engine,web3",
+        "--http.addr=0.0.0.0",
+        "--ws",
+        "--ws.api=eth,net,engine,web3",
+        "--ws.addr=0.0.0.0",
+        "--ws.origins=*",
+        "--authrpc.addr=0.0.0.0",
+        "--authrpc.port=8551",
+        "--authrpc.vhosts=*",
+        "--authrpc.jwtsecret=/opt/config/jwt",
+      ]
+    volumes:
+      - "./geth:/root/.ethereum"
+      - "./geth/config:/opt/config"
+    ports:
+      - 127.0.0.1:8546:8546
+      - 127.0.0.1:8551:8551
+      - 30303:30303
+
+  beacon:
+    image: prysmaticlabs/prysm-beacon-chain:v4.0.7
+    user: root
+    container_name: beacon
+    restart: unless-stopped
+    depends_on:
+      - geth
+    command:
+      [
+        "--goerli",
+        "--genesis-state=/opt/prysm/data/genesis.ssz",
+        "--jwt-secret=/opt/config/jwt",
+        "--suggested-fee-recipient=0x3660650755B12555BBAc2284c2391ccBB4EBFDD6",
+        "--execution-endpoint=http://geth:8551",
+        "--accept-terms-of-use",
+        "--p2p-denylist=private",
+        "--checkpoint-sync-url=https://goerli.beaconstate.ethstaker.cc",
+        "--genesis-beacon-api-url=https://goerli.beaconstate.ethstaker.cc",
+        "--rpc-host=0.0.0.0",
+        "--grpc-gateway-host=0.0.0.0",
+        "--monitoring-host=0.0.0.0"
+      ]
+    volumes:
+      - "./prysm/beacon/data:/opt/prysm/data"
+      - "./geth/config:/opt/config"
+    ports:
+      - 13103:13103/tcp
+      - 12000:12000/udp
+      - 127.0.0.1:4000:4000
+      - 127.0.0.1:3500:3500
+      - 127.0.0.1:8080:8080
+
+  prometheus:
+    image: prom/prometheus:v2.46.0
+    user: root
+    container_name: prometheus
+    hostname: prometheus
+    restart: unless-stopped
+    command: --config.file=/etc/prometheus/prometheus.yml
+    ports:
+      - 127.0.0.1:9090:9090
+    volumes:
+      - ./prometheus/config/prometheus.yaml:/etc/prometheus/prometheus.yml
+      - ./prometheus/data:/prometheus
+
+  node-exporter:
+    image: prom/node-exporter:v1.6.1
+    container_name: node-exporter
+    ports:
+      - 127.0.0.1:9100:9100
+    restart: always
+
+  grafana:
+    image: grafana/grafana:10.0.3
+    user: root
+    container_name: grafana
+    hostname: grafana
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana/config:/etc/grafana/provisioning
+      - ./grafana/data:/var/lib/grafana
+      - ./grafana/config/grafana.ini:/etc/grafana/grafana.ini

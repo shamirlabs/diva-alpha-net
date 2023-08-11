@@ -1,0 +1,14 @@
+# data files
+data
+
+# misc
+.DS_Store
+
+# local env files
+.env*.local
+
+# template
+.env
+
+# folders
+prysm
