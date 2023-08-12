@@ -11,14 +11,14 @@ services:
     command:
       - '--db=/opt/diva/data/diva.db'
       - '--w3s-address=0.0.0.0'
-      - '--execution-client-url=ws://127.0.0.1:8546' # Change this (execution RPC WebSocket, geth example)
-      - '--consensus-client-url=http://127.0.0.1:3500' # Change this (consensus REST API, prysm example)
+      - '--execution-client-url=${EXECUTION_CLIENT_URL}'
+      - '--consensus-client-url=${CONSENSUS_CLIENT_URL}'
       - '--tracing'
       - '--log-level=debug'
       - '--contract=0xf73280D617AB4BDff2558adcD1a1659ccD1B4fF9'
-      - '--master-key=changeThis' # Change this (API key for the operator UI)
+      - '--master-key=${DIVA_API_KEY}'
     environment:
-      - DIVA_VAULT_PASSWORD=vaultPassword # Change this (password for the encrypted vault)
+      - DIVA_VAULT_PASSWORD=${DIVA_VAULT_PASSWORD}
       - OTEL_EXPORTER_JAEGER_AGENT_HOST=jaeger
       - OTEL_EXPORTER_JAEGER_AGENT_PORT=6831
     volumes:
@@ -37,7 +37,7 @@ services:
     command:
       [
         "--accept-terms-of-use",
-        "--beacon-rpc-provider=127.0.0.1:4000", # Change this (consensus RPC, prysm example)
+        "--beacon-rpc-provider=${BEACON_RPC_PROVIDER}", 
         "--monitoring-host=0.0.0.0",
         "--validators-external-signer-public-keys=http://diva:9000/api/v1/eth2/publicKeys",
         "--validators-external-signer-url=http://diva:9000",
@@ -88,4 +88,4 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - USERNAME=username-address # Change this (recommended to username of the operator and ethereum address)
+      - USERNAME=${TESTNET_USERNAME}

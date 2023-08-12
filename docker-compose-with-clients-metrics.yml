@@ -16,9 +16,9 @@ services:
       - '--tracing'
       - '--log-level=debug'
       - '--contract=0xf73280D617AB4BDff2558adcD1a1659ccD1B4fF9'
-      - '--master-key=changeThis' # Change this (API key for the operator UI)
+      - '--master-key=${DIVA_API_KEY}'
     environment:
-      - DIVA_VAULT_PASSWORD=vaultPassword # Change this (password for the encrypted vault)
+      - DIVA_VAULT_PASSWORD=${DIVA_VAULT_PASSWORD}
       - OTEL_EXPORTER_JAEGER_AGENT_HOST=jaeger
       - OTEL_EXPORTER_JAEGER_AGENT_PORT=6831
     volumes:
@@ -88,7 +88,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - USERNAME=username-address # Change this (recommended to username of the operator and node address)
+      - USERNAME=${TESTNET_USERNAME}
 
   # Ethereum clients
   geth:
