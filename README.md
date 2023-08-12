@@ -39,43 +39,43 @@ Take into account that both options contain telemetry images to help us monitor 
 
 ### 2.1 Run Diva and connect it to your Ethereum clients
 
-To configure the consensus and execution clients, you **MUST** change the following values of the file `docker-compose.yml`:
+To configure the consensus and execution clients, you **MUST** rename the file `.env.example` to `.env` and change the following values of the file:
 
-- Replace the value `ws://127.0.0.1:8546` in the line `14` with the WebSocket endpoint of your execution client.
-  ```yaml
-  - '--execution-client-url=ws://127.0.0.1:8546' # Change this (execution RPC WebSocket, geth example)
+- Replace the value `ws://127.0.0.1:8546` of `EXECUTION_CLIENT_URL` with the WebSocket endpoint of your execution client.
+  ```sh
+  EXECUTION_CLIENT_URL=ws://127.0.0.1:8546  # Change this (execution RPC WebSocket, geth example)
   ```
 
-- Replace the value `http://127.0.0.1:3500` in the line `15` with the REST API provider endpoint of your consensus client.
+- Replace the value `http://127.0.0.1:3500` of `CONSENSUS_CLIENT_URL` with the REST API provider endpoint of your consensus client.
 
-  ```yaml
-  - '--consensus-client-url=http://127.0.0.1:3500' # Change this (consensus REST API, prysm example)
+  ```sh
+  CONSENSUS_CLIENT_URL=http://127.0.0.1:3500  # Change this (consensus REST API, prysm example)
   ```
 
-- Replace the value `127.0.0.1:3500` in the line `40` with the RPC provider endpoint of your consensus client.
+- Replace the value `127.0.0.1:4000` of the `BEACON_RPC_PROVIDER` with the RPC provider endpoint of your consensus client.
 
-  ```yaml
-  "--beacon-rpc-provider=127.0.0.1:4000", # Change this (consensus RPC, prysm example)
+  ```sh
+  BEACON_RPC_PROVIDER=127.0.0.1:4000 # Change this (consensus RPC, prysm example)
   ```
 
-To securely configure the Diva client, you **SHOULD** change the following values of the file `docker-compose.yml` (these steps are optional in testnet, but highly recommended):
+To securely configure the Diva client, you **SHOULD** change the following values of the `.env` file  as well (these steps are optional in testnet, but highly recommended):
 
-- Replace the value `changeThis` in the line `19` with the password that you want to use to login to your Diva node API. You must use this password later when accessing the Operator UI.
+- Replace the value `changeThis` of the `DIVA_API_KEY` with the password that you want to use to login to your Diva node API. You must use this password later when accessing the Operator UI.
 
-  ```yaml
-  - '--master-key=changeThis' # Change this (API key for the operator UI)
+  ```sh
+  DIVA_API_KEY=changeThis  # Change this (API key for the operator UI)
   ```
 
-- Replace the value `vaultPassword` in the line `21` with the password that you want to use to login to your Diva node API. This password is used to encrypt the database of your node and could be useful to restore your node in the future. Be aware that once this parameter is set during the bootstraping of the node, you won't be able to change it until such functionality is implemented.
+- Replace the value `vaultPassword` of the `DIVA_VAULT_PASSWORD` with the password that you want to use to login to your Diva node API. This password is used to encrypt the database of your node and could be useful to restore your node in the future. Be aware that once this parameter is set during the bootstraping of the node, you won't be able to change it until such functionality is implemented.
 
-  ```yaml
-  - DIVA_VAULT_PASSWORD=vaultPassword # Change this (password for the encrypted vault)
+  ```sh
+  DIVA_VAULT_PASSWORD=vaultPassword # Change this (password for the encrypted vault)
   ```
 
-- Replace the value `username-address` in the line `91` with the user ID that you want to use in the testnet (for instance, `prada-0x0000000000000000000000000000000000000000`).
+- Replace the value `username-address` of the `TESTNET_USERNAME` with the user ID that you want to use in the testnet (for instance, `prada-0x0000000000000000000000000000000000000000`).
 
-  ```yaml
-  - USERNAME=username-address # Change this (recommended to username of the operator and ethereum address)
+  ```sh
+  TESTNET_USERNAME=username-address  # Change this (recommended to username of the operator and ethereum address)
   ```
 
 Once you have changed all the above values, continue configuring your node in [section 2.3](#23-configure-your-node).
@@ -92,7 +92,7 @@ Alternatively, if you don't have Ethereum clients running in the Goerli testnet 
 - [Prysm](https://github.com/prysmaticlabs/prysm) consensus and validator clients
 - [Prometheus](https://prometheus.io/), [Grafana](https://grafana.com/), [Jaeger](https://www.jaegertracing.io/) and [Vector](https://vector.dev/) for monitoring the testnet.
 
-You **SHOULD** first change the recommended values described in [section 2.1](#21-run-diva-and-connect-it-to-your-ethereum-clients) in the file `docker-compose-with-clients-metrics.yml` (you don't need to change the endpoints configuration). Continue configuring your node in [section 2.3](#23-configure-your-node).
+You **SHOULD** first change the recommended values described in [section 2.1](#21-run-diva-and-connect-it-to-your-ethereum-clients) in the `.env` file (you don't need to change the endpoints configuration). Continue configuring your node in [section 2.3](#23-configure-your-node).
 
 
 ### 2.3. Configure your node
@@ -112,7 +112,7 @@ Finally, to run your node, execute the following command if you used the docker 
 docker compose up -d
 ```
 
-Or the following if you used the docker compose file `docker-compose-with-clients-metrics.yml`:
+Or the following if you want to use the docker compose file `docker-compose-with-clients-metrics.yml`:
 
 ```sh
 # Run the docker compose file with clients
