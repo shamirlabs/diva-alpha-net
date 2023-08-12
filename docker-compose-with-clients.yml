@@ -146,7 +146,7 @@ services:
       - "./prysm/beacon/data:/opt/prysm/data"
       - "./geth/config:/opt/config"
     ports:
-      - 13103:13103/tcp
+      - 13000:13000/tcp
       - 12000:12000/udp
       - 127.0.0.1:4000:4000
       - 127.0.0.1:3500:3500
