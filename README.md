@@ -16,7 +16,7 @@ This repository contains the necessary compose files to participate in the Diva 
 
 ## 1. Install docker
 
-This Github repository contains docker compose files than can be run using [docker](https://www.docker.com/). Please, [install docker](https://docs.docker.com/engine/install/) first if you want to join the Diva alpha net. Keep in mind that currently we provide only `linux/amd64` images.
+This Github repository contains docker compose files that can be run using [docker](https://www.docker.com/). Please, [install docker](https://docs.docker.com/engine/install/) first if you want to join the Diva alpha net. Keep in mind that currently we provide only `linux/amd64` images.
 
 ## 2. Prepare your node
 
@@ -35,7 +35,7 @@ To run a Diva node autonomously, you need to connect the Diva docker container t
 - If you already have Ethereum clients running in the Goerli testnet, [continue to section 2.1](#21-run-diva-and-connect-it-to-your-ethereum-clients).
 - If you don't have Ethereum clients running in the Goerli testnet, [continue to section 2.2](#22-run-diva-with-ethereum-clients-and-metrics-from-scratch).
 
-Take into account that both options contain telemetry images to help us monitor and improve the testnet. If you want to disable such telemetry, follow the indstruction described in x.x.
+Take into account that both options contain telemetry images to help us monitor and improve the testnet. If you want to disable such telemetry, follow the instructions described in x.x.
 
 ### 2.1 Run Diva and connect it to your Ethereum clients
 
@@ -125,7 +125,7 @@ Your node should be up and running, ready to continue the setup using the Operat
 
 ## 3. Setup your node
 
-Follow the instructions of the [following video](https://youtu.be/efkyU2oEygo) to setup your node using the Diva Operator wev UI.
+Follow the instructions of the [following video](https://youtu.be/efkyU2oEygo) to setup your node using the Diva Operator web UI.
 
 To do that, you will need to access to the Diva operator web UI in any of two ways:
    
