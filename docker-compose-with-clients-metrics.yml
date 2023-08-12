@@ -117,7 +117,8 @@ services:
     ports:
       - 127.0.0.1:8546:8546
       - 127.0.0.1:8551:8551
-      - 30303:30303
+      - "30303:30303/tcp"
+      - "30303:30303/udp"
 
   beacon:
     image: prysmaticlabs/prysm-beacon-chain:v4.0.7
