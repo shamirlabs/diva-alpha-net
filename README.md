@@ -77,6 +77,12 @@ To securely configure the Diva client, you **SHOULD** change the following value
   ```sh
   TESTNET_USERNAME=username-address  # Change this (recommended to username of the operator and ethereum address)
   ```
+  
+- Replace the value `docker-compose.yml` of the `COMPOSE_FILE` with the name of the docker compose file that you want to use).
+
+  ```sh
+  COMPOSE_FILE=docker-compose.yml # Change this (docker compose file name)
+  ```
 
 Once you have changed all the above values, continue configuring your node in [section 2.3](#23-configure-your-node).
 
@@ -106,18 +112,11 @@ Your Diva client needs to talk to other nodes in order to perform signatures, re
 
 You could also run the Operator UI locally on your laptop and connect to the port `30000` of your Diva client using a VPN, keeping access to your node as constrained as possible.
 
-Finally, to run your node, execute the following command if you used the docker compose file `docker-compose.yml`:
+Finally, to run your node, execute the following command:
 
 ```sh
 # Run the docker compose file
 docker compose up -d
-```
-
-Or the following if you want to use the docker compose file `docker-compose-with-clients-metrics.yml`:
-
-```sh
-# Run the docker compose file with clients
-docker compose -f docker-compose-with-clients-metrics.yml up -d
 ```
 
 Your node should be up and running, ready to continue the setup using the Operator UI as described in [section 3](#3-setup-your-node).
