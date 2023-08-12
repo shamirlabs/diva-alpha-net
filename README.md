@@ -94,6 +94,8 @@ Alternatively, if you don't have Ethereum clients running in the Goerli testnet 
 
 You **SHOULD** first change the recommended values described in [section 2.1](#21-run-diva-and-connect-it-to-your-ethereum-clients) in the `.env` file (you don't need to change the endpoints configuration). Continue configuring your node in [section 2.3](#23-configure-your-node).
 
+If you are running your node inside a local network (e.g. you are a home staker) **SHOULD** make sure to forward the P2P ports of the Execution and Consensus clients to your host machine. For Geth and Prysm, you should forward the ports `30303/tcp`, `30303/udp`, and `13000/tcp`. This is in addition to forwarding the Diva port `5050/tcp`. This is not relevant for cloud servers.
+
 
 ### 2.3. Configure your node
 
