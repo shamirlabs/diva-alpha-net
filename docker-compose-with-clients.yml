@@ -117,7 +117,8 @@ services:
     ports:
       - 127.0.0.1:8546:8546
       - 127.0.0.1:8551:8551
-      - 30303:30303
+      - "30303:30303/tcp"
+      - "30303:30303/udp"
 
   beacon:
     image: prysmaticlabs/prysm-beacon-chain:v4.0.7
@@ -145,7 +146,7 @@ services:
       - "./prysm/beacon/data:/opt/prysm/data"
       - "./geth/config:/opt/config"
     ports:
-      - 13103:13103/tcp
+      - 13000:13000/tcp
       - 12000:12000/udp
       - 127.0.0.1:4000:4000
       - 127.0.0.1:3500:3500
