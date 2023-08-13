@@ -17,6 +17,7 @@ services:
       - '--log-level=debug'
       - '--contract=0xf73280D617AB4BDff2558adcD1a1659ccD1B4fF9'
       - '--master-key=${DIVA_API_KEY}'
+      - '--w3s-port=${DIVA_W3S_PORT}'      
     environment:
       - DIVA_VAULT_PASSWORD=${DIVA_VAULT_PASSWORD}
       - OTEL_EXPORTER_JAEGER_AGENT_HOST=jaeger
@@ -24,7 +25,7 @@ services:
     volumes:
       - ./.diva/data/:/opt/diva/data/
     ports:
-      - 127.0.0.1:9000:9000
+      - 127.0.0.1:${DIVA_W3S_PORT}:${DIVA_W3S_PORT}
       - 5050:5050
       - 30000:30000
 
@@ -39,8 +40,8 @@ services:
         "--accept-terms-of-use",
         "--beacon-rpc-provider=beacon:4000",
         "--monitoring-host=0.0.0.0",
-        "--validators-external-signer-public-keys=http://diva:9000/api/v1/eth2/publicKeys",
-        "--validators-external-signer-url=http://diva:9000",
+        "--validators-external-signer-public-keys=http://diva:${DIVA_W3S_PORT}/api/v1/eth2/publicKeys",
+        "--validators-external-signer-url=http://diva:${DIVA_W3S_PORT}",
         "--web",
         "--wallet-dir=/jwt",
         "--grpc-gateway-host=0.0.0.0",
@@ -62,7 +63,7 @@ services:
       - ./prysm/validator/jwt:/jwt
     environment:
       - VALIDATOR_RKM_API=http://validator:7500
-      - DIVA_W3S_API=http://diva:9000
+      - DIVA_W3S_API=http://diva:${DIVA_W3S_PORT}
       - SYNC_PERIOD=600
 
   operator-ui:
