@@ -37,13 +37,14 @@ services:
     command:
       [
         "--accept-terms-of-use",
-        "--beacon-rpc-provider=${BEACON_RPC_PROVIDER}", 
+        "--beacon-rpc-provider=${BEACON_RPC_PROVIDER}",
         "--monitoring-host=0.0.0.0",
         "--validators-external-signer-public-keys=http://diva:9000/api/v1/eth2/publicKeys",
         "--validators-external-signer-url=http://diva:9000",
         "--web",
         "--wallet-dir=/jwt",
         "--grpc-gateway-host=0.0.0.0",
+        "--graffiti=\"Diva operator\"",
       ]
     volumes:
       - ./prysm/validator/config:/config
