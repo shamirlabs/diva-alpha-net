@@ -22,7 +22,7 @@ services:
       - OTEL_EXPORTER_JAEGER_AGENT_HOST=jaeger
       - OTEL_EXPORTER_JAEGER_AGENT_PORT=6831
     volumes:
-      - ./.diva/data/:/opt/diva/data/
+      - ${DIVA_DATA_FOLDER:-.}/.diva/data/:/opt/diva/data/
     ports:
       - 127.0.0.1:9000:9000
       - 5050:5050
@@ -46,9 +46,9 @@ services:
         "--grpc-gateway-host=0.0.0.0",
       ]
     volumes:
-      - ./prysm/validator/config:/config
-      - ./prysm/validator/data/validator:/data
-      - ./prysm/validator/jwt:/jwt
+      - ${DIVA_DATA_FOLDER:-.}/prysm/validator/config:/config
+      - ${DIVA_DATA_FOLDER:-.}/prysm/validator/data/validator:/data
+      - ${DIVA_DATA_FOLDER:-.}/prysm/validator/jwt:/jwt
     ports:
       - 127.0.0.1:7500:7500
 
@@ -112,8 +112,8 @@ services:
         "--authrpc.jwtsecret=/opt/config/jwt",
       ]
     volumes:
-      - "./geth:/root/.ethereum"
-      - "./geth/config:/opt/config"
+      - "${DIVA_DATA_FOLDER:-.}/geth:/root/.ethereum"
+      - "${DIVA_DATA_FOLDER:-.}/geth/config:/opt/config"
     ports:
       - 127.0.0.1:8546:8546
       - 127.0.0.1:8551:8551
@@ -143,8 +143,8 @@ services:
         "--monitoring-host=0.0.0.0"
       ]
     volumes:
-      - "./prysm/beacon/data:/opt/prysm/data"
-      - "./geth/config:/opt/config"
+      - "${DIVA_DATA_FOLDER:-.}/prysm/beacon/data:/opt/prysm/data"
+      - "${DIVA_DATA_FOLDER:-.}/geth/config:/opt/config"
     ports:
       - 13000:13000/tcp
       - 12000:12000/udp
@@ -162,8 +162,8 @@ services:
     ports:
       - 127.0.0.1:9090:9090
     volumes:
-      - ./prometheus/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yml
-      - ./prometheus/data:/prometheus
+      - ${DIVA_DATA_FOLDER:-.}/prometheus/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yml
+      - ${DIVA_DATA_FOLDER:-.}/prometheus/data:/prometheus
 
   node-exporter:
     image: prom/node-exporter:v1.6.1
@@ -181,6 +181,6 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - ./grafana/config:/etc/grafana/provisioning
-      - ./grafana/data:/var/lib/grafana
-      - ./grafana/config/grafana.ini:/etc/grafana/grafana.ini
+      - ${DIVA_DATA_FOLDER:-.}/grafana/config:/etc/grafana/provisioning
+      - ${DIVA_DATA_FOLDER:-.}/grafana/data:/var/lib/grafana
+      - ${DIVA_DATA_FOLDER:-.}/grafana/config/grafana.ini:/etc/grafana/grafana.ini

@@ -46,9 +46,9 @@ services:
         "--grpc-gateway-host=0.0.0.0",
       ]
     volumes:
-      - ./prysm/validator/config:/config
-      - ./prysm/validator/data/validator:/data
-      - ./prysm/validator/jwt:/jwt
+      - ${DIVA_DATA_FOLDER:-.}/prysm/validator/config:/config
+      - ${DIVA_DATA_FOLDER:-.}/prysm/validator/data/validator:/data
+      - ${DIVA_DATA_FOLDER:-.}/prysm/validator/jwt:/jwt
     ports:
       - 127.0.0.1:7500:7500
 
@@ -59,7 +59,7 @@ services:
     hostname: reloader
     restart: unless-stopped
     volumes:
-      - ./prysm/validator/jwt:/jwt
+      - ${DIVA_DATA_FOLDER:-.}/prysm/validator/jwt:/jwt
     environment:
       - VALIDATOR_RKM_API=http://validator:7500
       - DIVA_W3S_API=http://diva:9000
