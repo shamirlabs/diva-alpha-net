@@ -12,6 +12,7 @@ data
 
 # folders
 prysm
+geth
 
 # IDEs
 .idea

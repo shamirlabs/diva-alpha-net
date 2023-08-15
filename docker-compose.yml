@@ -3,7 +3,7 @@ version: '3.8'
 services:
 
   diva:
-    image: diva/diva:v23.8.6
+    image: diva/diva:v23.8.7
     platform: linux/amd64
     container_name: diva
     hostname: diva
@@ -67,7 +67,7 @@ services:
       - SYNC_PERIOD=600
 
   operator-ui:
-    image: diva/operator-ui:v23.8.1
+    image: diva/operator-ui:v23.8.2
     platform: linux/amd64
     container_name: operator-ui
     restart: unless-stopped
