@@ -1,0 +1,103 @@
+version: '3.8'
+
+services:
+
+  diva:
+    image: diva/diva:v23.8.7
+    platform: linux/amd64
+    container_name: diva
+    hostname: diva
+    restart: unless-stopped
+    command:
+      - '--db=/opt/diva/data/diva.db'
+      - '--w3s-address=0.0.0.0'
+      - '--execution-client-url=${EXECUTION_CLIENT_URL}'
+      - '--consensus-client-url=${CONSENSUS_CLIENT_URL}'
+      - '--tracing'
+      - '--log-level=debug'
+      - '--contract=0xf73280D617AB4BDff2558adcD1a1659ccD1B4fF9'
+      - '--master-key=${DIVA_API_KEY}'
+    environment:
+      - DIVA_VAULT_PASSWORD=${DIVA_VAULT_PASSWORD}
+      - OTEL_EXPORTER_JAEGER_AGENT_HOST=jaeger
+      - OTEL_EXPORTER_JAEGER_AGENT_PORT=6831
+    volumes:
+      - ./.diva/data/:/opt/diva/data/
+    ports:
+      - 5050:5050
+
+  validator:
+    image: chainsafe/lodestar:latest
+    platform: linux/amd64
+    container_name: validator
+    hostname: validator
+    restart: unless-stopped
+    command:
+      - validator
+      - --dataDir
+      - /var/lib/lodestar/validators
+      - --beaconNodes
+      - ${CONSENSUS_CLIENT_URL}
+      - --keymanager
+      - --keymanager.address
+      - 0.0.0.0
+      - --keymanager.port
+      - "7500"
+      - --network
+      - goerli
+      - --externalSigner.url
+      - http://diva:9000
+      - --externalSigner.fetch
+    volumes:
+      - ${DIVA_DATA_FOLDER:-.}/lodestar/validators:/var/lib/lodestar/validators
+    networks:
+      default:
+        aliases:
+          - vc-rkm
+
+  reloader:
+    image: diva/reloader:v23.8.0
+    platform: linux/amd64
+    container_name: reloader
+    hostname: reloader
+    restart: unless-stopped
+    volumes:
+      - ./lodestar/validators/validator-db:/jwt
+    environment:
+      - VALIDATOR_RKM_API=http://vc-rkm:7500
+      - DIVA_W3S_API=http://diva:9000
+      - SYNC_PERIOD=600
+    entrypoint: ["/bin/sh","-c"]
+    command:
+      - |
+        while [ ! -f /jwt/api-token.txt ]; do
+          sleep 1
+          echo "Waiting for Lodestar to create keymanager auth token"
+        done
+        cp /jwt/api-token.txt /jwt/auth-token
+        exec /bin/sh /reload.sh
+
+  operator-ui:
+    image: diva/operator-ui:v23.8.2
+    platform: linux/amd64
+    container_name: operator-ui
+    restart: unless-stopped
+    ports:
+      - 80:80
+
+  # Telemetry configuration
+  jaeger:
+    image: diva/jaeger:v23.8.0
+    platform: linux/amd64
+    container_name: jaeger
+    restart: unless-stopped
+
+  vector:
+    image: diva/vector:v23.8.0
+    platform: linux/amd64
+    container_name: vector
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - USERNAME=${TESTNET_USERNAME}

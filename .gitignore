@@ -13,6 +13,7 @@ data
 # folders
 prysm
 geth
+lodestar
 
 # IDEs
 .idea
