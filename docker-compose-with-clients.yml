@@ -24,7 +24,6 @@ services:
     volumes:
       - ${DIVA_DATA_FOLDER:-.}/.diva/data/:/opt/diva/data/
     ports:
-      - 127.0.0.1:9000:9000
       - 5050:5050
       - 30000:30000
 
@@ -50,8 +49,6 @@ services:
       - ${DIVA_DATA_FOLDER:-.}/prysm/validator/config:/config
       - ${DIVA_DATA_FOLDER:-.}/prysm/validator/data/validator:/data
       - ${DIVA_DATA_FOLDER:-.}/prysm/validator/jwt:/jwt
-    ports:
-      - 127.0.0.1:7500:7500
     networks:
       default:
         aliases:
@@ -120,8 +117,6 @@ services:
       - "${DIVA_DATA_FOLDER:-.}/geth:/root/.ethereum"
       - "${DIVA_DATA_FOLDER:-.}/geth/config:/opt/config"
     ports:
-      - 127.0.0.1:8546:8546
-      - 127.0.0.1:8551:8551
       - "30303:30303/tcp"
       - "30303:30303/udp"
 
@@ -153,6 +148,3 @@ services:
     ports:
       - 13000:13000/tcp
       - 12000:12000/udp
-      - 127.0.0.1:4000:4000
-      - 127.0.0.1:3500:3500
-      - 127.0.0.1:8080:8080

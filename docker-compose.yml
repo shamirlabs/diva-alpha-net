@@ -24,7 +24,6 @@ services:
     volumes:
       - ./.diva/data/:/opt/diva/data/
     ports:
-      - 127.0.0.1:9000:9000
       - 5050:5050
       - 30000:30000
 
@@ -50,8 +49,6 @@ services:
       - ${DIVA_DATA_FOLDER:-.}/prysm/validator/config:/config
       - ${DIVA_DATA_FOLDER:-.}/prysm/validator/data/validator:/data
       - ${DIVA_DATA_FOLDER:-.}/prysm/validator/jwt:/jwt
-    ports:
-      - 127.0.0.1:7500:7500
     networks:
       default:
         aliases:
