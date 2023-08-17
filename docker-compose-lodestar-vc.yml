@@ -25,6 +25,7 @@ services:
       - ./.diva/data/:/opt/diva/data/
     ports:
       - 5050:5050
+      - 30000:30000
 
   validator:
     image: chainsafe/lodestar:latest
@@ -78,7 +79,7 @@ services:
         exec /bin/sh /reload.sh
 
   operator-ui:
-    image: diva/operator-ui:v23.8.2
+    image: diva/operator-ui:v23.8.3
     platform: linux/amd64
     container_name: operator-ui
     restart: unless-stopped
