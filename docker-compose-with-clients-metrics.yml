@@ -52,6 +52,10 @@ services:
       - ${DIVA_DATA_FOLDER:-.}/prysm/validator/jwt:/jwt
     ports:
       - 127.0.0.1:7500:7500
+    networks:
+      default:
+        aliases:
+          - vc-rkm
 
   reloader:
     image: diva/reloader:v23.8.0
@@ -62,7 +66,7 @@ services:
     volumes:
       - ./prysm/validator/jwt:/jwt
     environment:
-      - VALIDATOR_RKM_API=http://validator:7500
+      - VALIDATOR_RKM_API=http://vc-rkm:7500
       - DIVA_W3S_API=http://diva:9000
       - SYNC_PERIOD=600
 
