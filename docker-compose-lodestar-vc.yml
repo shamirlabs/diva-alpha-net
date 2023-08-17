@@ -3,7 +3,7 @@ version: '3.8'
 services:
 
   diva:
-    image: diva/diva:v23.8.7
+    image: diva/diva:${DIVA_VERSION:-v23.8.7}
     platform: linux/amd64
     container_name: diva
     hostname: diva
@@ -25,6 +25,7 @@ services:
       - ./.diva/data/:/opt/diva/data/
     ports:
       - 5050:5050
+      - 30000:30000
 
   validator:
     image: chainsafe/lodestar:latest
@@ -56,7 +57,7 @@ services:
           - vc-rkm
 
   reloader:
-    image: diva/reloader:v23.8.0
+    image: diva/reloader:${RELOADER_VERSION:-v23.8.0}
     platform: linux/amd64
     container_name: reloader
     hostname: reloader
@@ -78,7 +79,7 @@ services:
         exec /bin/sh /reload.sh
 
   operator-ui:
-    image: diva/operator-ui:v23.8.4
+    image: diva/operator-ui:${OPERATOR_UI_VERSION:-v23.8.4}
     platform: linux/amd64
     container_name: operator-ui
     restart: unless-stopped
@@ -87,13 +88,13 @@ services:
 
   # Telemetry configuration
   jaeger:
-    image: diva/jaeger:v23.8.0
+    image: diva/jaeger:${JAEGER_VERSION:-v23.8.0}
     platform: linux/amd64
     container_name: jaeger
     restart: unless-stopped
 
   vector:
-    image: diva/vector:v23.8.0
+    image: diva/vector:${VECTOR_VERSION:-v23.8.0}
     platform: linux/amd64
     container_name: vector
     restart: unless-stopped
