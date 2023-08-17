@@ -1,0 +1,11 @@
+# Host-map service ports useful for devs
+# Add `:dev-ports.yml` to `COMPOSE_FILE` in `.env` to use
+version: "3.8"
+
+services:
+  diva:
+    ports:
+      - 127.0.0.1:9000:9000
+  validator:
+    ports:
+      - 127.0.0.1:7500:7500
