@@ -71,7 +71,7 @@ services:
       - SYNC_PERIOD=600
 
   operator-ui:
-    image: diva/operator-ui:${OPERATOR_UI_VERSION:-v23.8.3}
+    image: diva/operator-ui:${OPERATOR_UI_VERSION:-v23.8.4}
     platform: linux/amd64
     container_name: operator-ui
     restart: unless-stopped
