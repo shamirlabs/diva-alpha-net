@@ -79,7 +79,7 @@ services:
         exec /bin/sh /reload.sh
 
   operator-ui:
-    image: diva/operator-ui:${OPERATOR_UI_VERSION:-v23.8.4}
+    image: diva/operator-ui:${OPERATOR_UI_VERSION:-v23.8.5}
     platform: linux/amd64
     container_name: operator-ui
     restart: unless-stopped
