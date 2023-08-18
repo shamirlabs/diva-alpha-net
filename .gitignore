@@ -9,6 +9,8 @@ data
 
 # template
 .env
+.env.bak
+.env.old
 
 # folders
 prysm
