@@ -1,0 +1,10 @@
+[sources.container]
+type = "docker_logs"
+include_containers = ["diva"]
+
+[sinks.loki]
+type = "loki"
+inputs = ["container"]
+endpoint = "http://37.27.6.77:3100"
+encoding.codec = "json"
+labels = {app="diva", env="alpha-net", username="${USERNAME}"}
