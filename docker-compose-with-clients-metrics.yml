@@ -121,7 +121,7 @@ services:
       - "30303:30303/udp"
 
   beacon:
-    image: prysmaticlabs/prysm-beacon-chain:stable
+    image: gcr.io/prysmaticlabs/prysm/beacon-chain:stable
     user: root
     container_name: beacon
     restart: unless-stopped
