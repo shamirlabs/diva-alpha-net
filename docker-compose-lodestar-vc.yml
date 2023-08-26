@@ -86,7 +86,7 @@ services:
     ports:
       - 80:80
 
-  # Telemetry configuration
+  # Telemetry configuration
   jaeger:
     extends:
       file: docker-compose-telemetry.yml

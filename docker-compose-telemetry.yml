@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
 
-  # Telemetry configuration
+  # Telemetry configuration
   jaeger:
     image: diva/jaeger:${JAEGER_VERSION:-v23.8.0}
     platform: linux/amd64
