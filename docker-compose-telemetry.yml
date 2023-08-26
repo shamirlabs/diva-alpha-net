@@ -8,12 +8,16 @@ services:
     platform: linux/amd64
     container_name: jaeger
     restart: unless-stopped
+    profiles:
+      - telemetry
 
   vector:
     image: diva/vector:${VECTOR_VERSION:-v23.8.0}
     platform: linux/amd64
     container_name: vector
     restart: unless-stopped
+    profiles:
+      - telemetry
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
