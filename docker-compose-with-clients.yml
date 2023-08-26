@@ -77,20 +77,14 @@ services:
 
   # Telemetry configuration
   jaeger:
-    image: diva/jaeger:${JAEGER_VERSION:-v23.8.0}
-    platform: linux/amd64
-    container_name: jaeger
-    restart: unless-stopped
+    extends:
+      file: docker-compose-telemetry.yml
+      service: jaeger
 
   vector:
-    image: diva/vector:${VECTOR_VERSION:-v23.8.0}
-    platform: linux/amd64
-    container_name: vector
-    restart: unless-stopped
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - USERNAME=${TESTNET_USERNAME}
+    extends:
+      file: docker-compose-telemetry.yml
+      service: vector
 
   # Ethereum clients
   geth:
