@@ -1,7 +1,11 @@
-# Add `:lodestar-vc.yml` to `COMPOSE_FILE` in `.env` to use
 version: '3.8'
 
 services:
+
+  diva:
+    extends:
+      file: docker-compose.yml
+      service: diva
 
   validator:
     image: chainsafe/lodestar:latest
@@ -53,3 +57,19 @@ services:
         done
         cp /jwt/api-token.txt /jwt/auth-token
         exec /bin/sh /reload.sh
+
+  operator-ui:
+    extends:
+      file: docker-compose.yml
+      service: operator-ui
+
+  # Telemetry configuration
+  jaeger:
+    extends:
+      file: docker-compose.yml
+      service: jaeger
+
+  vector:
+    extends:
+      file: docker-compose.yml
+      service: vector
