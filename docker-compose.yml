@@ -73,7 +73,7 @@ services:
     container_name: operator-ui
     restart: unless-stopped
     ports:
-      - "81:80"
+      - "80:80"
 
   # Telemetry configuration
   jaeger:
