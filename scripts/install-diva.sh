@@ -133,10 +133,11 @@ else
         sed -i.bak -e "s/^COMPOSE_PROFILES *=.*/COMPOSE_PROFILES=clients,metrics,telemetry/" .env
     else
         sed -i.bak -e "s/^COMPOSE_PROFILES *=.*/COMPOSE_PROFILES=clients,telemetry/" .env
-        sed -i.bak -e "s/^EXECUTION_CLIENT_URL *=.*/EXECUTION_CLIENT_URL=ws:\/\/geth:8546/" .env
-        sed -i.bak -e "s/^CONSENSUS_CLIENT_URL *=.*/CONSENSUS_CLIENT_URL=http:\/\/beacon:3500/" .env
-        sed -i.bak -e "s/^BEACON_RPC_PROVIDER *=.*/BEACON_RPC_PROVIDER=beacon:4000/" .env
     fi
+
+    sed -i.bak -e "s/^EXECUTION_CLIENT_URL *=.*/EXECUTION_CLIENT_URL=ws:\/\/geth:8546/" .env
+    sed -i.bak -e "s/^CONSENSUS_CLIENT_URL *=.*/CONSENSUS_CLIENT_URL=http:\/\/beacon:3500/" .env
+    sed -i.bak -e "s/^BEACON_RPC_PROVIDER *=.*/BEACON_RPC_PROVIDER=beacon:4000/" .env
 fi
 
 MENU="Type the API key/password that you want to use to connect to your Diva node\n"
