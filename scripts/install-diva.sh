@@ -11,7 +11,7 @@ if [[ ! -x "$(command -v docker)" ]]; then
     # Docker is not installed
     dialog --title "$TITLE" --yesno "This will close your session. You will have to login and execute the script again.\n\nAre you sure?" 0 0
     exitcode=$?;
-    if [ $exitcode -ne 1 ]; 
+    if [ $exitcode -ne 1 ];
     then
         ./install-docker.sh
         logout
@@ -28,20 +28,20 @@ if [[ -f ".env" ]]; then
     # .env already exists
     dialog --title "$TITLE" --yesno ".env exists in the parent directory\n\nDo you want to overwrite it?" 0 0
     exitcode=$?;
-    if [ $exitcode -eq 1 ]; 
+    if [ $exitcode -eq 1 ];
     then
         cp .env .env.old
         rm -rf .env
-        cp .env.example .env 
+        cp .env.example .env
     fi
 else
-    cp .env.example .env 
+    cp .env.example .env
 fi
 
 dialog --title "$TITLE" --yesno "Do you want to run your own Ethereum clients in this machine?" 0 0
 exitcode=$?;
 
-if [ $exitcode -eq 1 ]; 
+if [ $exitcode -eq 1 ];
 then
 
     MENU="Type the IP and PORT of your execution client RPC\n"
@@ -55,7 +55,7 @@ then
                     $HEIGHT $WIDTH 2>&1 >/dev/tty)
 
         exitcode=$?;
-        if [ $exitcode -eq 1 ]; 
+        if [ $exitcode -eq 1 ];
         then
             exit 1
         fi
@@ -64,7 +64,7 @@ then
             ## TODO: Check also the wss connection with wscat or similar
             # wscat -c "${exec_client_url}"
             # Ideally it should be tested from inside of a (wscat?) docker container so we ensure it connects to endpoints like ws://geth:8546
-            
+
             sed -i.bak -e "s/^EXECUTION_CLIENT_URL *=.*/EXECUTION_CLIENT_URL=${execution_client_url}/" .env
             break
         else
@@ -85,7 +85,7 @@ then
                     $HEIGHT $WIDTH 2>&1 >/dev/tty)
 
         exitcode=$?;
-        if [ $exitcode -eq 1 ]; 
+        if [ $exitcode -eq 1 ];
         then
             exit 1
         fi
@@ -111,7 +111,7 @@ then
                     $HEIGHT $WIDTH 2>&1 >/dev/tty)
 
         exitcode=$?;
-        if [ $exitcode -eq 1 ]; 
+        if [ $exitcode -eq 1 ];
         then
             exit 1
         fi
@@ -128,11 +128,14 @@ then
 else
     dialog --title "$TITLE" --yesno "Do you want to run a grafana dashboard with prometheus?" 0 0
     exitcode=$?;
-    if [ $exitcode -eq 1 ]; 
+    if [ $exitcode -eq 1 ];
     then
-        sed -i.bak -e "s/^COMPOSE_FILE *=.*/COMPOSE_FILE=docker-compose-with-clients-metrics.yml/" .env
+        sed -i.bak -e "s/^COMPOSE_PROFILES *=.*/COMPOSE_PROFILES=clients,metrics,telemetry/" .env
     else
-        sed -i.bak -e "s/^COMPOSE_FILE *=.*/COMPOSE_FILE=docker-compose-with-clients.yml/" .env
+        sed -i.bak -e "s/^COMPOSE_PROFILES *=.*/COMPOSE_PROFILES=clients,telemetry/" .env
+        sed -i.bak -e "s/^EXECUTION_CLIENT_URL *=.*/EXECUTION_CLIENT_URL=ws:\/\/geth:8546/" .env
+        sed -i.bak -e "s/^CONSENSUS_CLIENT_URL *=.*/CONSENSUS_CLIENT_URL=http:\/\/beacon:3500/" .env
+        sed -i.bak -e "s/^BEACON_RPC_PROVIDER *=.*/BEACON_RPC_PROVIDER=beacon:4000/" .env
     fi
 fi
 
@@ -147,7 +150,7 @@ do
                 $HEIGHT $WIDTH 2>&1 >/dev/tty)
 
     exitcode=$?;
-    if [ $exitcode -eq 1 ]; 
+    if [ $exitcode -eq 1 ];
     then
         exit 1
     fi
@@ -173,7 +176,7 @@ do
                 $HEIGHT $WIDTH 2>&1 >/dev/tty)
 
     exitcode=$?;
-    if [ $exitcode -eq 1 ]; 
+    if [ $exitcode -eq 1 ];
     then
         exit 1
     fi
