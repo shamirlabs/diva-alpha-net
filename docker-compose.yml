@@ -24,8 +24,8 @@ services:
     volumes:
       - ./.diva/data/:/opt/diva/data/
     ports:
-      - 5050:5050
-      - 30000:30000
+      - "5050:5050"
+      - "30000:30000"
 
   validator:
     image: gcr.io/prysmaticlabs/prysm/validator:stable
@@ -73,13 +73,15 @@ services:
     container_name: operator-ui
     restart: unless-stopped
     ports:
-      - 80:80
+      - "80:80"
 
-  # Telemetry configuration
+  # Telemetry configuration
   jaeger:
     image: diva/jaeger:${JAEGER_VERSION:-v23.8.0}
     platform: linux/amd64
     container_name: jaeger
+    profiles:
+      - telemetry
     restart: unless-stopped
 
   vector:
@@ -87,7 +89,106 @@ services:
     platform: linux/amd64
     container_name: vector
     restart: unless-stopped
+    profiles:
+      - telemetry
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - USERNAME=${TESTNET_USERNAME}
+
+  # Ethereum clients
+  geth:
+    image: ethereum/client-go:stable
+    container_name: geth
+    profiles:
+      - clients
+    restart: unless-stopped
+    stop_grace_period: 1m
+    command:
+      [
+        "--goerli",
+        "--http",
+        "--http.api=eth,net,engine,web3",
+        "--http.addr=0.0.0.0",
+        "--ws",
+        "--ws.api=eth,net,engine,web3",
+        "--ws.addr=0.0.0.0",
+        "--ws.origins=*",
+        "--authrpc.addr=0.0.0.0",
+        "--authrpc.port=8551",
+        "--authrpc.vhosts=*",
+        "--authrpc.jwtsecret=/opt/config/jwt",
+      ]
+    volumes:
+      - "${DIVA_DATA_FOLDER:-.}/geth:/root/.ethereum"
+      - "${DIVA_DATA_FOLDER:-.}/geth/config:/opt/config"
+    ports:
+      - "30303:30303/tcp"
+      - "30303:30303/udp"
+
+  beacon:
+    image: gcr.io/prysmaticlabs/prysm/beacon-chain:stable
+    user: root
+    container_name: beacon
+    profiles:
+      - clients
+    restart: unless-stopped
+    depends_on:
+      - geth
+    command:
+      [
+        "--goerli",
+        "--genesis-state=/opt/prysm/data/genesis.ssz",
+        "--jwt-secret=/opt/config/jwt",
+        "--suggested-fee-recipient=0x3660650755B12555BBAc2284c2391ccBB4EBFDD6",
+        "--execution-endpoint=http://geth:8551",
+        "--accept-terms-of-use",
+        "--p2p-denylist=private",
+        "--checkpoint-sync-url=https://goerli.beaconstate.ethstaker.cc",
+        "--genesis-beacon-api-url=https://goerli.beaconstate.ethstaker.cc",
+        "--rpc-host=0.0.0.0",
+        "--grpc-gateway-host=0.0.0.0",
+        "--monitoring-host=0.0.0.0"
+      ]
+    volumes:
+      - "${DIVA_DATA_FOLDER:-.}/prysm/beacon/data:/opt/prysm/data"
+      - "${DIVA_DATA_FOLDER:-.}/geth/config:/opt/config"
+    ports:
+      - "13000:13000/tcp"
+      - "12000:12000/udp"
+
+  # Metrics
+  prometheus:
+    image: prom/prometheus:latest
+    user: root
+    container_name: prometheus
+    profiles:
+      - metrics
+    hostname: prometheus
+    restart: unless-stopped
+    command: --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ${DIVA_DATA_FOLDER:-.}/prometheus/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yml
+      - ${DIVA_DATA_FOLDER:-.}/prometheus/data:/prometheus
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    profiles:
+      - metrics
+    restart: always
+
+  grafana:
+    image: grafana/grafana:latest
+    user: root
+    container_name: grafana
+    profiles:
+      - metrics
+    hostname: grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ${DIVA_DATA_FOLDER:-.}/grafana/config:/etc/grafana/provisioning
+      - ${DIVA_DATA_FOLDER:-.}/grafana/data:/var/lib/grafana
+      - ${DIVA_DATA_FOLDER:-.}/grafana/config/grafana.ini:/etc/grafana/grafana.ini

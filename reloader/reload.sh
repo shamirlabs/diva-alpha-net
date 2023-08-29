@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Docker environment variables
+# Docker environment variables
 
 # VALIDATOR_RKM_API="127.0.0.1:7500"
 # DIVA_W3S_API="127.0.0.1:9000"

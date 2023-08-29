@@ -9,3 +9,23 @@ services:
   validator:
     ports:
       - 127.0.0.1:7500:7500
+
+  geth:
+    ports:
+      - 127.0.0.1:8546:8546
+      - 127.0.0.1:8551:8551
+    profiles:
+      - clients
+  beacon:
+    ports:
+      - 127.0.0.1:4000:4000
+      - 127.0.0.1:3500:3500
+      - 127.0.0.1:8080:8080
+    profiles:
+      - clients
+
+  prometheus:
+    ports:
+      - 127.0.0.1:9090:9090
+    profiles:
+      - metrics

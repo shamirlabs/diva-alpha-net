@@ -3,29 +3,9 @@ version: '3.8'
 services:
 
   diva:
-    image: diva/diva:${DIVA_VERSION:-v23.8.7}
-    platform: linux/amd64
-    container_name: diva
-    hostname: diva
-    restart: unless-stopped
-    command:
-      - '--db=/opt/diva/data/diva.db'
-      - '--w3s-address=0.0.0.0'
-      - '--execution-client-url=${EXECUTION_CLIENT_URL}'
-      - '--consensus-client-url=${CONSENSUS_CLIENT_URL}'
-      - '--tracing'
-      - '--log-level=debug'
-      - '--contract=0xf73280D617AB4BDff2558adcD1a1659ccD1B4fF9'
-      - '--master-key=${DIVA_API_KEY}'
-    environment:
-      - DIVA_VAULT_PASSWORD=${DIVA_VAULT_PASSWORD}
-      - OTEL_EXPORTER_JAEGER_AGENT_HOST=jaeger
-      - OTEL_EXPORTER_JAEGER_AGENT_PORT=6831
-    volumes:
-      - ./.diva/data/:/opt/diva/data/
-    ports:
-      - 5050:5050
-      - 30000:30000
+    extends:
+      file: docker-compose.yml
+      service: diva
 
   validator:
     image: chainsafe/lodestar:latest
@@ -63,7 +43,7 @@ services:
     hostname: reloader
     restart: unless-stopped
     volumes:
-      - ./lodestar/validators/validator-db:/jwt
+      - ${DIVA_DATA_FOLDER:-.}/lodestar/validators/validator-db:/jwt
     environment:
       - VALIDATOR_RKM_API=http://vc-rkm:7500
       - DIVA_W3S_API=http://diva:9000
@@ -79,26 +59,17 @@ services:
         exec /bin/sh /reload.sh
 
   operator-ui:
-    image: diva/operator-ui:${OPERATOR_UI_VERSION:-v23.8.5}
-    platform: linux/amd64
-    container_name: operator-ui
-    restart: unless-stopped
-    ports:
-      - 80:80
+    extends:
+      file: docker-compose.yml
+      service: operator-ui
 
-  # Telemetry configuration
+  # Telemetry configuration
   jaeger:
-    image: diva/jaeger:${JAEGER_VERSION:-v23.8.0}
-    platform: linux/amd64
-    container_name: jaeger
-    restart: unless-stopped
+    extends:
+      file: docker-compose.yml
+      service: jaeger
 
   vector:
-    image: diva/vector:${VECTOR_VERSION:-v23.8.0}
-    platform: linux/amd64
-    container_name: vector
-    restart: unless-stopped
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - USERNAME=${TESTNET_USERNAME}
+    extends:
+      file: docker-compose.yml
+      service: vector
