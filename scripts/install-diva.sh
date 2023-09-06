@@ -26,9 +26,9 @@ git pull --quiet
 
 if [[ -f ".env" ]]; then
     # .env already exists
-    dialog --title "$TITLE" --yesno ".env exists in the parent directory\n\nDo you want to overwrite it?" 0 0
+    dialog --title "$TITLE" --yesno ".env exists in the parent directory\n\nDo you want to keep it as .env.old?" 0 0
     exitcode=$?;
-    if [ $exitcode -eq 1 ];
+    if [ $exitcode -ne 1 ];
     then
         cp .env .env.old
         rm -rf .env
@@ -126,15 +126,6 @@ then
     clear
     done
 else
-    dialog --title "$TITLE" --yesno "Do you want to run a grafana dashboard with prometheus?" 0 0
-    exitcode=$?;
-    if [ $exitcode -eq 1 ];
-    then
-        sed -i.bak -e "s/^COMPOSE_PROFILES *=.*/COMPOSE_PROFILES=clients,metrics,telemetry/" .env
-    else
-        sed -i.bak -e "s/^COMPOSE_PROFILES *=.*/COMPOSE_PROFILES=clients,telemetry/" .env
-    fi
-
     sed -i.bak -e "s/^EXECUTION_CLIENT_URL *=.*/EXECUTION_CLIENT_URL=ws:\/\/geth:8546/" .env
     sed -i.bak -e "s/^CONSENSUS_CLIENT_URL *=.*/CONSENSUS_CLIENT_URL=http:\/\/beacon:3500/" .env
     sed -i.bak -e "s/^BEACON_RPC_PROVIDER *=.*/BEACON_RPC_PROVIDER=beacon:4000/" .env
