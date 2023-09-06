@@ -75,27 +75,6 @@ services:
     ports:
       - "80:80"
 
-  # Telemetry configuration
-  jaeger:
-    image: diva/jaeger:${JAEGER_VERSION:-v23.8.0}
-    platform: linux/amd64
-    container_name: jaeger
-    profiles:
-      - telemetry
-    restart: unless-stopped
-
-  vector:
-    image: diva/vector:${VECTOR_VERSION:-v23.8.0}
-    platform: linux/amd64
-    container_name: vector
-    restart: unless-stopped
-    profiles:
-      - telemetry
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - USERNAME=${TESTNET_USERNAME}
-
   # Ethereum clients
   geth:
     image: ethereum/client-go:stable
@@ -157,13 +136,13 @@ services:
       - "13000:13000/tcp"
       - "12000:12000/udp"
 
-  # Metrics
+  # Telemetry  
   prometheus:
     image: prom/prometheus:latest
     user: root
     container_name: prometheus
     profiles:
-      - metrics
+      - telemetry
     hostname: prometheus
     restart: unless-stopped
     command: --config.file=/etc/prometheus/prometheus.yml
@@ -175,7 +154,7 @@ services:
     image: prom/node-exporter:latest
     container_name: node-exporter
     profiles:
-      - metrics
+      - telemetry
     restart: always
 
   grafana:
@@ -183,7 +162,7 @@ services:
     user: root
     container_name: grafana
     profiles:
-      - metrics
+      - telemetry
     hostname: grafana
     restart: unless-stopped
     ports:
@@ -192,3 +171,23 @@ services:
       - ${DIVA_DATA_FOLDER:-.}/grafana/config:/etc/grafana/provisioning
       - ${DIVA_DATA_FOLDER:-.}/grafana/data:/var/lib/grafana
       - ${DIVA_DATA_FOLDER:-.}/grafana/config/grafana.ini:/etc/grafana/grafana.ini
+
+  jaeger:
+    image: diva/jaeger:${JAEGER_VERSION:-v23.8.0}
+    platform: linux/amd64
+    container_name: jaeger
+    profiles:
+      - telemetry
+    restart: unless-stopped
+
+  vector:
+    image: diva/vector:${VECTOR_VERSION:-v23.8.0}
+    platform: linux/amd64
+    container_name: vector
+    restart: unless-stopped
+    profiles:
+      - telemetry
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - USERNAME=${TESTNET_USERNAME}

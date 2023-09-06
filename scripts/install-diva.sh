@@ -196,4 +196,7 @@ done
 vault_pw=$(openssl rand -base64 16 | tr -d "=+/" | cut -c1-16)
 sed -i.bak -e "s/^DIVA_VAULT_PASSWORD *=.*/DIVA_VAULT_PASSWORD=${vault_pw}/" .env
 
+export $(grep -v '^#' ./.env | sed 's/ *#.*//g' | xargs)
+envsubst < "./prometheus/prometheus/prometheus_template.yaml" > "./prometheus/prometheus/prometheus.yaml"
+
 ./scripts/cmd/start-all.sh $exec_path
