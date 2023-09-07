@@ -75,27 +75,6 @@ services:
     ports:
       - "80:80"
 
-  # Telemetry configuration
-  jaeger:
-    image: diva/jaeger:${JAEGER_VERSION:-v23.8.0}
-    platform: linux/amd64
-    container_name: jaeger
-    profiles:
-      - telemetry
-    restart: unless-stopped
-
-  vector:
-    image: diva/vector:${VECTOR_VERSION:-v23.8.0}
-    platform: linux/amd64
-    container_name: vector
-    restart: unless-stopped
-    profiles:
-      - telemetry
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - USERNAME=${TESTNET_USERNAME}
-
   # Ethereum clients
   geth:
     image: ethereum/client-go:stable
@@ -157,13 +136,13 @@ services:
       - "13000:13000/tcp"
       - "12000:12000/udp"
 
-  # Metrics
+  # Telemetry  
   prometheus:
     image: prom/prometheus:latest
     user: root
     container_name: prometheus
     profiles:
-      - metrics
+      - telemetry
     hostname: prometheus
     restart: unless-stopped
     command: --config.file=/etc/prometheus/prometheus.yml
@@ -175,9 +154,30 @@ services:
     image: prom/node-exporter:latest
     container_name: node-exporter
     profiles:
-      - metrics
+      - telemetry
     restart: always
 
+  jaeger:
+    image: diva/jaeger:${JAEGER_VERSION:-v23.8.0}
+    platform: linux/amd64
+    container_name: jaeger
+    profiles:
+      - telemetry
+    restart: unless-stopped
+
+  vector:
+    image: diva/vector:${VECTOR_VERSION:-v23.8.0}
+    platform: linux/amd64
+    container_name: vector
+    restart: unless-stopped
+    profiles:
+      - telemetry
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - USERNAME=${TESTNET_USERNAME}
+
+  # Metrics
   grafana:
     image: grafana/grafana:latest
     user: root

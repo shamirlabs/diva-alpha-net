@@ -26,9 +26,9 @@ git pull --quiet
 
 if [[ -f ".env" ]]; then
     # .env already exists
-    dialog --title "$TITLE" --yesno ".env exists in the parent directory\n\nDo you want to overwrite it?" 0 0
+    dialog --title "$TITLE" --yesno ".env exists in the parent directory\n\nDo you want to keep it as .env.old?" 0 0
     exitcode=$?;
-    if [ $exitcode -eq 1 ];
+    if [ $exitcode -ne 1 ];
     then
         cp .env .env.old
         rm -rf .env
@@ -126,9 +126,9 @@ then
     clear
     done
 else
-    dialog --title "$TITLE" --yesno "Do you want to run a grafana dashboard with prometheus?" 0 0
+    dialog --title "$TITLE" --yesno "Do you want to run a Grafana to monitor your node?" 0 0
     exitcode=$?;
-    if [ $exitcode -eq 1 ];
+    if [ $exitcode -ne 1 ];
     then
         sed -i.bak -e "s/^COMPOSE_PROFILES *=.*/COMPOSE_PROFILES=clients,metrics,telemetry/" .env
     else
@@ -195,5 +195,8 @@ done
 # Let's assume the vault_password should be generated randomly
 vault_pw=$(openssl rand -base64 16 | tr -d "=+/" | cut -c1-16)
 sed -i.bak -e "s/^DIVA_VAULT_PASSWORD *=.*/DIVA_VAULT_PASSWORD=${vault_pw}/" .env
+
+export $(grep -v '^#' ./.env | sed 's/ *#.*//g' | xargs)
+envsubst < "./prometheus/prometheus/prometheus_template.yaml" > "./prometheus/prometheus/prometheus.yaml"
 
 ./scripts/cmd/start-all.sh $exec_path
