@@ -126,7 +126,7 @@ then
     clear
     done
 else
-    dialog --title "$TITLE" --yesno "Do you want to run a grafana dashboard with prometheus?" 0 0
+    dialog --title "$TITLE" --yesno "Do you want to run a grafana dashboard with prometheus?" 1 0
     exitcode=$?;
     if [ $exitcode -eq 1 ];
     then
