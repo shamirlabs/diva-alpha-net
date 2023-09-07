@@ -126,6 +126,15 @@ then
     clear
     done
 else
+    dialog --title "$TITLE" --yesno "Do you want to run a Grafana to monitor your node?" 0 0
+    exitcode=$?;
+    if [ $exitcode -ne 1 ];
+    then
+        sed -i.bak -e "s/^COMPOSE_PROFILES *=.*/COMPOSE_PROFILES=clients,metrics,telemetry/" .env
+    else
+        sed -i.bak -e "s/^COMPOSE_PROFILES *=.*/COMPOSE_PROFILES=clients,telemetry/" .env
+    fi
+
     sed -i.bak -e "s/^EXECUTION_CLIENT_URL *=.*/EXECUTION_CLIENT_URL=ws:\/\/geth:8546/" .env
     sed -i.bak -e "s/^CONSENSUS_CLIENT_URL *=.*/CONSENSUS_CLIENT_URL=http:\/\/beacon:3500/" .env
     sed -i.bak -e "s/^BEACON_RPC_PROVIDER *=.*/BEACON_RPC_PROVIDER=beacon:4000/" .env

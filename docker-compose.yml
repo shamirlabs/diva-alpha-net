@@ -157,21 +157,6 @@ services:
       - telemetry
     restart: always
 
-  grafana:
-    image: grafana/grafana:latest
-    user: root
-    container_name: grafana
-    profiles:
-      - telemetry
-    hostname: grafana
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    volumes:
-      - ${DIVA_DATA_FOLDER:-.}/grafana/config:/etc/grafana/provisioning
-      - ${DIVA_DATA_FOLDER:-.}/grafana/data:/var/lib/grafana
-      - ${DIVA_DATA_FOLDER:-.}/grafana/config/grafana.ini:/etc/grafana/grafana.ini
-
   jaeger:
     image: diva/jaeger:${JAEGER_VERSION:-v23.8.0}
     platform: linux/amd64
@@ -191,3 +176,19 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - USERNAME=${TESTNET_USERNAME}
+
+  # Metrics
+  grafana:
+    image: grafana/grafana:latest
+    user: root
+    container_name: grafana
+    profiles:
+      - metrics
+    hostname: grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ${DIVA_DATA_FOLDER:-.}/grafana/config:/etc/grafana/provisioning
+      - ${DIVA_DATA_FOLDER:-.}/grafana/data:/var/lib/grafana
+      - ${DIVA_DATA_FOLDER:-.}/grafana/config/grafana.ini:/etc/grafana/grafana.ini
