@@ -145,9 +145,9 @@ services:
       - telemetry
     hostname: prometheus
     restart: unless-stopped
-    command: --config.file=/etc/prometheus/prometheus.yml
+    command: --config.file=/etc/config/prometheus.yml
     volumes:
-      - ${DIVA_DATA_FOLDER:-.}/prometheus/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yml
+      - ${DIVA_DATA_FOLDER:-.}/prometheus/prometheus/prometheus.yaml:/etc/config/prometheus.yml
       - ${DIVA_DATA_FOLDER:-.}/prometheus/data:/prometheus
 
   node-exporter:
