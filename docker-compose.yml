@@ -136,7 +136,7 @@ services:
       - "13000:13000/tcp"
       - "12000:12000/udp"
 
-  # Telemetry  
+  # Telemetry
   prometheus:
     image: prom/prometheus:latest
     user: root
@@ -145,10 +145,22 @@ services:
       - telemetry
     hostname: prometheus
     restart: unless-stopped
-    command: --config.file=/etc/prometheus/prometheus.yml
+    entrypoint: /bin/sh
+    command: >
+      -c
+        "awk '
+          /\\\$$TESTNET_USERNAME/ {gsub(\"\\\\\\$$TESTNET_USERNAME\", ENVIRON[\"TESTNET_USERNAME\"])}
+          {print}
+        ' /etc/prometheus/prometheus_template.yml > /etc/prometheus/prometheus.yml
+        /bin/prometheus --config.file=/etc/prometheus/prometheus.yml \
+          --storage.tsdb.path=/prometheus\
+          --web.console.libraries=/usr/share/prometheus/console_libraries\
+          --web.console.templates=/usr/share/prometheus/consoles"
     volumes:
-      - ${DIVA_DATA_FOLDER:-.}/prometheus/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yml
+      - ${DIVA_DATA_FOLDER:-.}/prometheus/prometheus/prometheus_template.yaml:/etc/prometheus/prometheus_template.yml
       - ${DIVA_DATA_FOLDER:-.}/prometheus/data:/prometheus
+    environment:
+      - TESTNET_USERNAME=${TESTNET_USERNAME}
 
   node-exporter:
     image: prom/node-exporter:latest
