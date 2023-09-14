@@ -147,7 +147,7 @@ services:
     restart: unless-stopped
     command: --config.file=/etc/config/prometheus.yml
     volumes:
-      - ${DIVA_DATA_FOLDER:-.}/prometheus/prometheus/prometheus.yaml:/etc/config/prometheus.yml
+      - ${DIVA_DATA_FOLDER:-.}/prometheus/config/prometheus_template.yaml:/etc/config/prometheus_template.yml
       - ${DIVA_DATA_FOLDER:-.}/prometheus/data:/prometheus
 
   node-exporter:
