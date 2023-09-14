@@ -136,16 +136,15 @@ services:
       - "13000:13000/tcp"
       - "12000:12000/udp"
 
-  # Telemetry  
+  # Telemetry
   prometheus:
-    image: prom/prometheus:latest
+    image: diva/prometheus:${PROMETHEUS_VERSION:-v23.9.0}
     user: root
     container_name: prometheus
     profiles:
       - telemetry
     hostname: prometheus
     restart: unless-stopped
-    command: --config.file=/etc/config/prometheus.yml
     volumes:
       - ${DIVA_DATA_FOLDER:-.}/prometheus/config/prometheus_template.yaml:/etc/config/prometheus_template.yml
       - ${DIVA_DATA_FOLDER:-.}/prometheus/data:/prometheus
