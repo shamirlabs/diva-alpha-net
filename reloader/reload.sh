@@ -11,6 +11,13 @@ VALIDATOR_RKM_API_TOKEN_PATH="/jwt/auth-token"
 W3S_KEYS_FILE="/w3skeys.json"
 VALIDATOR_RKM_API_TOKEN=$(cat $VALIDATOR_RKM_API_TOKEN_PATH | sed -n '2 p')
 
+_term() {
+  exit 0
+}
+
+# Enregistre la fonction handle_signal pour qu'elle soit appelée sur réception de SIGTERM
+trap _term SIGTERM
+
 while [ true ]; do
     echo "----------------------------------"
     echo "Reloading..."
@@ -62,5 +69,5 @@ while [ true ]; do
 
     echo "----------------------------------"
     echo ""
-    sleep $SYNC_PERIOD
+    sleep $SYNC_PERIOD & wait $!
 done
