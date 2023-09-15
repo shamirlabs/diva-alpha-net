@@ -8,56 +8,33 @@ services:
       service: diva
 
   validator:
-    image: chainsafe/lodestar:latest
-    platform: linux/amd64
+    environment:
+      - "JAVA_OPTS=-Xmx4g"
+    image: consensys/teku:latest
     container_name: validator
     hostname: validator
-    restart: unless-stopped
+    user: root
     command:
-      - validator
-      - --dataDir
-      - /var/lib/lodestar/validators
-      - --beaconNodes
-      - ${CONSENSUS_CLIENT_URL}
-      - --keymanager
-      - --keymanager.address
-      - 0.0.0.0
-      - --keymanager.port
-      - "7500"
-      - --network
-      - goerli
-      - --externalSigner.url
-      - http://diva:9000
-      - --externalSigner.fetch
+      [
+        "vc",
+        "--network=prater",
+        "--data-base-path=/opt/teku/data",
+        "--beacon-node-api-endpoint=http://${BEACON_RPC_PROVIDER}",
+        "--validators-external-signer-url=http://diva:9000",
+        "--validators-external-signer-public-keys=http://diva:9000/api/v1/eth2/publicKeys",
+        "--validators-proposer-default-fee-recipient=0xd945993f2F4b3D6Bd30ca6903F53E04dca88adBF",
+      ]
     volumes:
-      - ${DIVA_DATA_FOLDER:-.}/lodestar/validators:/var/lib/lodestar/validators
-    networks:
-      default:
-        aliases:
-          - vc-rkm
+      - "./teku-data:/opt/teku/data"
+    ports:
+      - "9999:9999"
+    restart: always
 
   reloader:
-    image: diva/reloader:${RELOADER_VERSION:-v23.8.0}
-    platform: linux/amd64
-    container_name: reloader
-    hostname: reloader
-    restart: unless-stopped
-    volumes:
-      - ${DIVA_DATA_FOLDER:-.}/lodestar/validators/validator-db:/jwt
-    environment:
-      - VALIDATOR_RKM_API=http://vc-rkm:7500
-      - DIVA_W3S_API=http://diva:9000
-      - SYNC_PERIOD=600
-    entrypoint: ["/bin/sh","-c"]
-    command:
-      - |
-        while [ ! -f /jwt/api-token.txt ]; do
-          sleep 1
-          echo "Waiting for Lodestar to create keymanager auth token"
-        done
-        cp /jwt/api-token.txt /jwt/auth-token
-        exec /bin/sh /reload.sh
-
+    extends:
+      file: docker-compose.yml
+      service: reloader
+        
   operator-ui:
     extends:
       file: docker-compose.yml
