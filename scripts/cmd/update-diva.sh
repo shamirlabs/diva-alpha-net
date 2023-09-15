@@ -12,4 +12,6 @@ sed -i.bak -e "s/^OPERATOR_UI_VERSION *=.*/OPERATOR_UI_VERSION=${OPERATOR_UI_VER
 sed -i.bak -e "s/^JAEGER_VERSION *=.*/JAEGER_VERSION=${JAEGER_VERSION}/" .env
 sed -i.bak -e "s/^VECTOR_VERSION *=.*/VECTOR_VERSION=${VECTOR_VERSION}/" .env
 
+docker stop diva
+docker stop operator-ui
 docker compose up -d
