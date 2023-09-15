@@ -15,6 +15,7 @@ services:
       - '--consensus-client-url=${CONSENSUS_CLIENT_URL}'
       - '--tracing'
       - '--log-level=debug'
+      - '--swagger-ui-enabled'
       - '--contract=0xf73280D617AB4BDff2558adcD1a1659ccD1B4fF9'
       - '--master-key=${DIVA_API_KEY}'
     environment:
@@ -147,7 +148,7 @@ services:
     restart: unless-stopped
     command: --config.file=/etc/config/prometheus.yml
     volumes:
-      - ${DIVA_DATA_FOLDER:-.}/prometheus/prometheus/prometheus.yaml:/etc/config/prometheus.yml
+      - ${DIVA_DATA_FOLDER:-.}/prometheus/config/prometheus.yaml:/etc/config/prometheus.yml
       - ${DIVA_DATA_FOLDER:-.}/prometheus/data:/prometheus
 
   node-exporter:
