@@ -3,7 +3,7 @@ version: '3.8'
 services:
 
   diva:
-    image: diva/diva:${DIVA_VERSION:-v23.9.0}
+    image: diva/diva:${DIVA_VERSION:-v23.9.1}
     platform: linux/amd64
     container_name: diva
     hostname: diva
