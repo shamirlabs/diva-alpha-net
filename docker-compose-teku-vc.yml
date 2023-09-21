@@ -3,29 +3,9 @@ version: '3.8'
 services:
 
   diva:
-    image: diva/diva:${DIVA_VERSION:-v23.9.0}
-    platform: linux/amd64
-    container_name: diva
-    hostname: diva
-    restart: unless-stopped
-    command:
-      - '--db=/opt/diva/data/diva.db'
-      - '--w3s-address=0.0.0.0'
-      - '--execution-client-url=${EXECUTION_CLIENT_URL}'
-      - '--consensus-client-url=${CONSENSUS_CLIENT_URL}'
-      - '--tracing'
-      - '--log-level=debug'
-      - '--contract=0xf73280D617AB4BDff2558adcD1a1659ccD1B4fF9'
-      - '--master-key=${DIVA_API_KEY}'
-    environment:
-      - DIVA_VAULT_PASSWORD=${DIVA_VAULT_PASSWORD}
-      - OTEL_EXPORTER_JAEGER_AGENT_HOST=jaeger
-      - OTEL_EXPORTER_JAEGER_AGENT_PORT=6831
-    volumes:
-      - ./.diva/data/:/opt/diva/data/
-    ports:
-      - "5050:5050"
-      - "30000:30000"
+    extends:
+      file: docker-compose.yml
+      service: diva
 
   validator:
     environment:
@@ -51,140 +31,22 @@ services:
     restart: always
 
   reloader:
-    image: diva/reloader:${RELOADER_VERSION:-v23.8.0}
-    platform: linux/amd64
-    container_name: reloader
-    hostname: reloader
-    restart: unless-stopped
-    volumes:
-      - ${DIVA_DATA_FOLDER:-.}/prysm/validator/jwt:/jwt
-    environment:
-      - VALIDATOR_RKM_API=http://vc-rkm:7500
-      - DIVA_W3S_API=http://diva:9000
-      - SYNC_PERIOD=600
-
+    extends:
+      file: docker-compose.yml
+      service: reloader
+        
   operator-ui:
-    image: diva/operator-ui:${OPERATOR_UI_VERSION:-v23.9.0}
-    platform: linux/amd64
-    container_name: operator-ui
-    restart: unless-stopped
-    ports:
-      - "80:80"
+    extends:
+      file: docker-compose.yml
+      service: operator-ui
 
-  # Ethereum clients
-  geth:
-    image: ethereum/client-go:stable
-    container_name: geth
-    profiles:
-      - clients
-    restart: unless-stopped
-    stop_grace_period: 1m
-    command:
-      [
-        "--goerli",
-        "--http",
-        "--http.api=eth,net,engine,web3",
-        "--http.addr=0.0.0.0",
-        "--ws",
-        "--ws.api=eth,net,engine,web3",
-        "--ws.addr=0.0.0.0",
-        "--ws.origins=*",
-        "--authrpc.addr=0.0.0.0",
-        "--authrpc.port=8551",
-        "--authrpc.vhosts=*",
-        "--authrpc.jwtsecret=/opt/config/jwt",
-      ]
-    volumes:
-      - "${DIVA_DATA_FOLDER:-.}/geth:/root/.ethereum"
-      - "${DIVA_DATA_FOLDER:-.}/geth/config:/opt/config"
-    ports:
-      - "30303:30303/tcp"
-      - "30303:30303/udp"
-
-  beacon:
-    image: gcr.io/prysmaticlabs/prysm/beacon-chain:stable
-    user: root
-    container_name: beacon
-    profiles:
-      - clients
-    restart: unless-stopped
-    depends_on:
-      - geth
-    command:
-      [
-        "--goerli",
-        "--genesis-state=/opt/prysm/data/genesis.ssz",
-        "--jwt-secret=/opt/config/jwt",
-        "--suggested-fee-recipient=0x3660650755B12555BBAc2284c2391ccBB4EBFDD6",
-        "--execution-endpoint=http://geth:8551",
-        "--accept-terms-of-use",
-        "--p2p-denylist=private",
-        "--checkpoint-sync-url=https://goerli.beaconstate.ethstaker.cc",
-        "--genesis-beacon-api-url=https://goerli.beaconstate.ethstaker.cc",
-        "--rpc-host=0.0.0.0",
-        "--grpc-gateway-host=0.0.0.0",
-        "--monitoring-host=0.0.0.0"
-      ]
-    volumes:
-      - "${DIVA_DATA_FOLDER:-.}/prysm/beacon/data:/opt/prysm/data"
-      - "${DIVA_DATA_FOLDER:-.}/geth/config:/opt/config"
-    ports:
-      - "13000:13000/tcp"
-      - "12000:12000/udp"
-
-  # Telemetry  
-  prometheus:
-    image: prom/prometheus:latest
-    user: root
-    container_name: prometheus
-    profiles:
-      - telemetry
-    hostname: prometheus
-    restart: unless-stopped
-    command: --config.file=/etc/config/prometheus.yml
-    volumes:
-      - ${DIVA_DATA_FOLDER:-.}/prometheus/prometheus/prometheus.yaml:/etc/config/prometheus.yml
-      - ${DIVA_DATA_FOLDER:-.}/prometheus/data:/prometheus
-
-  node-exporter:
-    image: prom/node-exporter:latest
-    container_name: node-exporter
-    profiles:
-      - telemetry
-    restart: always
-
+  # Telemetry configuration
   jaeger:
-    image: diva/jaeger:${JAEGER_VERSION:-v23.8.0}
-    platform: linux/amd64
-    container_name: jaeger
-    profiles:
-      - telemetry
-    restart: unless-stopped
+    extends:
+      file: docker-compose.yml
+      service: jaeger
 
   vector:
-    image: diva/vector:${VECTOR_VERSION:-v23.8.0}
-    platform: linux/amd64
-    container_name: vector
-    restart: unless-stopped
-    profiles:
-      - telemetry
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - USERNAME=${TESTNET_USERNAME}
-
-  # Metrics
-  grafana:
-    image: grafana/grafana:latest
-    user: root
-    container_name: grafana
-    profiles:
-      - metrics
-    hostname: grafana
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    volumes:
-      - ${DIVA_DATA_FOLDER:-.}/grafana/config:/etc/grafana/provisioning
-      - ${DIVA_DATA_FOLDER:-.}/grafana/data:/var/lib/grafana
-      - ${DIVA_DATA_FOLDER:-.}/grafana/config/grafana.ini:/etc/grafana/grafana.ini
+    extends:
+      file: docker-compose.yml
+      service: vector
