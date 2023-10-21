@@ -1,6 +1,6 @@
 #!/bin/bash
 
-docker stop $(docker ps -a -q) 
-docker rm $(docker ps -a -q)
-docker rmi $(docker images -a -q)
-docker system prune -y
+docker stop diva validator vector node-exporter prometheus operator-ui jaeger reloader
+docker rm diva validator vector node-exporter prometheus operator-ui jaeger reloader
+docker rmi $(docker images -a -q) #TODO: Ideally this only targets the diva created images in the future
+docker system prune -f
