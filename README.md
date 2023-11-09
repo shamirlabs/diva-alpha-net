@@ -14,4 +14,4 @@ This repository contains the necessary compose files to participate in the Diva 
 
 # Testnet instructions
 
-To join the testnet, follow the instructions described in the [**Diva testnet documentation**](https://docs.shamirlabs.org/testnet/intro)
+To join the testnet, follow the instructions described in the [**Diva testnet documentation**]([https://docs.shamirlabs.org/testnet/intro](https://docs.shamirlabs.org/diva/testnet/install/scripts/docker)https://docs.shamirlabs.org/diva/testnet/install/scripts/docker)
