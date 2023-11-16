@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+
+  diva:
+    extends:
+      file: docker-compose.yml
+      service: diva
+    user: ${DIVA_USER}
+
+  validator:
+    image: consensys/teku:latest
+    platform: linux/amd64
+    container_name: validator
+    hostname: validator
+    restart: unless-stopped
+    user: ${DIVA_USER}
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        if [ ! -f /opt/teku/data/validator_api_key.password ]; then
+            rm -f /opt/teku/data/validator_api_key.keystore
+            cat /proc/sys/kernel/random/uuid > /opt/teku/data/validator_api_key.password
+            keytool -genkeypair -keystore /opt/teku/data/validator_api_key.keystore -storetype PKCS12 -keyalg RSA -keysize 2048 -validity 10000 \
+                -dname "cn=localhost, ou=Unknown, o=Unknown, c=UU" \
+                -storepass `cat /opt/teku/data/validator_api_key.password`
+            chmod 640 /opt/teku/data/validator_api_key.password
+            chmod 640 /opt/teku/data/validator_api_key.keystore
+            echo "Keystore created."
+        fi
+        echo "wait 10s for diva to start."
+        sleep 10
+        exec /opt/teku/bin/teku "$@"
+    command:
+      [
+        "",
+        "vc",
+        "--network=goerli",
+        "--logging=DEBUG",
+        "--data-base-path=/opt/teku/data",
+        "--beacon-node-api-endpoint=${CONSENSUS_CLIENT_URL}",
+        "--validators-external-signer-url=http://diva:9000",
+        "--validators-external-signer-public-keys=http://diva:9000/api/v1/eth2/publicKeys",
+        "--validators-proposer-default-fee-recipient=0x3660650755B12555BBAc2284c2391ccBB4EBFDD6",
+        "--metrics-enabled=true",
+        "--metrics-host-allowlist=*",
+        "--metrics-interface=0.0.0.0",
+        "--metrics-port=8081",
+        "--validator-api-enabled=true",
+        "--validator-api-host-allowlist=*",
+        "--validator-api-interface=0.0.0.0",
+        "--validator-api-port=5052",
+        "--validator-api-keystore-file=/opt/teku/data/validator_api_key.keystore",
+        "--validator-api-keystore-password-file=/opt/teku/data/validator_api_key.password"
+      ]
+    volumes:
+      - ${DIVA_DATA_FOLDER:-.}/vc-clients/teku:/opt/teku/data
+
+  reloader:
+    image: diva/reloader:${RELOADER_VERSION:-v23.8.0}
+    platform: linux/amd64
+    container_name: reloader
+    hostname: reloader
+    restart: unless-stopped
+    user: ${DIVA_USER}
+    volumes:
+      - ${DIVA_DATA_FOLDER:-.}/vc-clients/teku/validator/key-manager:/jwt
+    environment:
+      - VALIDATOR_RKM_API=http://validator:5052
+      - DIVA_W3S_API=http://diva:9000
+      - SYNC_PERIOD=600
+    entrypoint: ["/bin/sh","-c"]
+    command:
+      - |
+        while [ ! -f /jwt/validator-api-bearer ]; do
+          sleep 1
+          echo "Waiting for Teku to create keymanager auth token"
+        done
+        cp /jwt/validator-api-bearer /jwt/auth-token
+        exec /bin/sh /reload.sh
+
+  operator-ui:
+    extends:
+      file: docker-compose.yml
+      service: operator-ui
+
+# Telemetry configuration
+  jaeger:
+    extends:
+      file: docker-compose.yml
+      service: jaeger
+
+  vector:
+    extends:
+      file: docker-compose.yml
+      service: vector
