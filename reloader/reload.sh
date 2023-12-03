@@ -8,8 +8,17 @@
 
 # Local variables
 VALIDATOR_RKM_API_TOKEN_PATH="/jwt/auth-token"
-W3S_KEYS_FILE="/w3skeys.json"
+W3S_KEYS_FILE="/tmp/w3skeys.json"
 VALIDATOR_RKM_API_TOKEN=$(cat $VALIDATOR_RKM_API_TOKEN_PATH | sed -n '2 p')
+
+if [ -z "$VALIDATOR_RKM_API_TOKEN" ]; then
+    VALIDATOR_RKM_API_TOKEN=$(cat $VALIDATOR_RKM_API_TOKEN_PATH | sed -n '1 p')
+fi
+
+if [ -z "$VALIDATOR_RKM_API_TOKEN" ]; then
+    echo "No Validator API token found, cannot continue."
+    exit 1
+fi
 
 while [ true ]; do
     echo "----------------------------------"
