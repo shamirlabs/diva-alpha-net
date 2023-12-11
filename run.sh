@@ -64,6 +64,5 @@ case $CHOICE in
             ;;
         8)
             echo "Not implemented"
-            break
             ;;
 esac
