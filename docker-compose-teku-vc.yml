@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+
+  diva:
+    extends:
+      file: docker-compose.yml
+      service: diva
+
+  validator:
+    environment:
+      - "JAVA_OPTS=-Xmx4g"
+    image: consensys/teku:latest
+    container_name: validator
+    hostname: validator
+    user: root
+    command:
+      [
+        "vc",
+        "--network=prater",
+        "--data-base-path=/opt/teku/data",
+        "--beacon-node-api-endpoint=http://${BEACON_RPC_PROVIDER}",
+        "--validators-external-signer-url=http://diva:9000",
+        "--validators-external-signer-public-keys=http://diva:9000/api/v1/eth2/publicKeys",
+        "--validators-proposer-default-fee-recipient=0xd945993f2F4b3D6Bd30ca6903F53E04dca88adBF",
+      ]
+    volumes:
+      - "./teku-data:/opt/teku/data"
+    ports:
+      - "9999:9999"
+    restart: always
+
+  reloader:
+    extends:
+      file: docker-compose.yml
+      service: reloader
+        
+  operator-ui:
+    extends:
+      file: docker-compose.yml
+      service: operator-ui
+
+  # Telemetry configuration
+  jaeger:
+    extends:
+      file: docker-compose.yml
+      service: jaeger
+
+  vector:
+    extends:
+      file: docker-compose.yml
+      service: vector
