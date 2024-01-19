@@ -113,7 +113,7 @@ services:
       - "30303:30303/udp"
 
   beacon:
-    image: gcr.io/prysmaticlabs/prysm/beacon-chain:stable
+    image: gcr.io/prysmaticlabs/prysm/beacon-chain:v4.2.1-rc.0
     user: root
     container_name: beacon
     profiles:
