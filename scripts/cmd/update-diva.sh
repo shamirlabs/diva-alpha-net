@@ -3,6 +3,7 @@
 exec_path=$1
 cd $exec_path
 
+git reset --hard origin/main
 git pull
 source .env.example
 
