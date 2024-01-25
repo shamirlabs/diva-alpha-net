@@ -3,7 +3,7 @@ version: '3.8'
 services:
 
   diva:
-    image: diva/diva:${DIVA_VERSION:-v23.9.1}
+    image: diva/diva:${DIVA_VERSION:-v24.1.0}
     platform: linux/amd64
     container_name: diva
     hostname: diva
@@ -18,6 +18,12 @@ services:
       - '--swagger-ui-enabled'
       - '--contract=0xf73280D617AB4BDff2558adcD1a1659ccD1B4fF9'
       - '--master-key=${DIVA_API_KEY}'
+      - '--genesis-time=1616508000'
+      - '--gvr=0x043db0d9a83813551ee2f33450d23797757d430911a9320530ad8a0eabc43efb'
+      - '--genesis-fork-version=0x00001020'
+      - '--current-fork-version=0x04001020'
+      - '--deposit-contract=0xff50ed3d0ec03ac01d4c79aad74928bff48a7b2b'
+      - '--chain-id=5'
     environment:
       - DIVA_VAULT_PASSWORD=${DIVA_VAULT_PASSWORD}
       - OTEL_EXPORTER_JAEGER_AGENT_HOST=jaeger
@@ -69,7 +75,7 @@ services:
       - SYNC_PERIOD=600
 
   operator-ui:
-    image: diva/operator-ui:${OPERATOR_UI_VERSION:-v23.9.0}
+    image: diva/operator-ui:${OPERATOR_UI_VERSION:-v24.1.1}
     platform: linux/amd64
     container_name: operator-ui
     restart: unless-stopped
@@ -107,7 +113,7 @@ services:
       - "30303:30303/udp"
 
   beacon:
-    image: gcr.io/prysmaticlabs/prysm/beacon-chain:stable
+    image: gcr.io/prysmaticlabs/prysm/beacon-chain:v4.2.1-rc.0
     user: root
     container_name: beacon
     profiles:

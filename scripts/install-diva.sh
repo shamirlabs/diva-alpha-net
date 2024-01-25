@@ -65,7 +65,7 @@ then
             # wscat -c "${exec_client_url}"
             # Ideally it should be tested from inside of a (wscat?) docker container so we ensure it connects to endpoints like ws://geth:8546
 
-            sed -i.bak -e "s/^EXECUTION_CLIENT_URL *=.*/EXECUTION_CLIENT_URL=${execution_client_url}/" .env
+            sed -i.bak -e "s,^EXECUTION_CLIENT_URL *=.*,EXECUTION_CLIENT_URL=${execution_client_url}," .env
             break
         else
             WARN="WebSocket connection error for \"${execution_client_url}\""
@@ -92,7 +92,7 @@ then
 
         status_code=$(curl --write-out '%{http_code}' --silent --output /dev/null $consensus_client_url/eth/v1/node/health)
         if [[ "$status_code" -eq 200 ]] ; then
-            sed -i.bak -e "s/^CONSENSUS_CLIENT_URL *=.*/CONSENSUS_CLIENT_URL=${consensus_client_url}/" .env
+            sed -i.bak -e "s,^CONSENSUS_CLIENT_URL *=.*,CONSENSUS_CLIENT_URL=${consensus_client_url}," .env
             break
         else
             WARN="HTTP connection error for \"${consensus_client_url}\""
@@ -118,7 +118,7 @@ then
 
         if ! [ -z "${beacon_client_url}" ]
         then
-            sed -i.bak -e "s/^BEACON_RPC_PROVIDER *=.*/BEACON_RPC_PROVIDER=${beacon_client_url}/" .env
+            sed -i.bak -e "s,^BEACON_RPC_PROVIDER *=.*,BEACON_RPC_PROVIDER=${beacon_client_url}," .env
             break
         else
             WARN="Invalid Beacon RPC \"${beacon_client_url}\""
@@ -135,9 +135,9 @@ else
         sed -i.bak -e "s/^COMPOSE_PROFILES *=.*/COMPOSE_PROFILES=clients,telemetry/" .env
     fi
 
-    sed -i.bak -e "s/^EXECUTION_CLIENT_URL *=.*/EXECUTION_CLIENT_URL=ws:\/\/geth:8546/" .env
-    sed -i.bak -e "s/^CONSENSUS_CLIENT_URL *=.*/CONSENSUS_CLIENT_URL=http:\/\/beacon:3500/" .env
-    sed -i.bak -e "s/^BEACON_RPC_PROVIDER *=.*/BEACON_RPC_PROVIDER=beacon:4000/" .env
+    sed -i.bak -e "s,^EXECUTION_CLIENT_URL *=.*,EXECUTION_CLIENT_URL=ws://geth:8546," .env
+    sed -i.bak -e "s,^CONSENSUS_CLIENT_URL *=.*,CONSENSUS_CLIENT_URL=http://beacon:3500," .env
+    sed -i.bak -e "s,^BEACON_RPC_PROVIDER *=.*,BEACON_RPC_PROVIDER=beacon:4000," .env
 fi
 
 MENU="Type the API key/password that you want to use to connect to your Diva node\n"
@@ -184,7 +184,7 @@ do
 
     if ! [ -z "${username}" ]
     then
-        sed -i.bak -e "s/^TESTNET_USERNAME *=.*/TESTNET_USERNAME=${username}/" .env
+        sed -i.bak -e "s,^TESTNET_USERNAME *=.*,TESTNET_USERNAME=${username}," .env
         break
     else
         WARN="\"${username}\" is not a valid username"
@@ -194,7 +194,7 @@ done
 
 # Let's assume the vault_password should be generated randomly
 vault_pw=$(openssl rand -base64 16 | tr -d "=+/" | cut -c1-16)
-sed -i.bak -e "s/^DIVA_VAULT_PASSWORD *=.*/DIVA_VAULT_PASSWORD=${vault_pw}/" .env
+sed -i.bak -e "s,^DIVA_VAULT_PASSWORD *=.*,DIVA_VAULT_PASSWORD=${vault_pw}," .env
 
 export $(grep -v '^#' ./.env | sed 's/ *#.*//g' | xargs)
 envsubst < "./prometheus/config/prometheus_template.yaml" > "./prometheus/config/prometheus.yaml"
