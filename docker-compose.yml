@@ -137,7 +137,7 @@ services:
         "--monitoring-host=0.0.0.0"
       ]
     volumes:
-      - "${DIVA_DATA_FOLDER:-.}/prysm/beacon/data:/opt/prysm/data"
+      - "${DIVA_DATA_FOLDER:-.}/prysm/beacon/data:/root/.eth2/beaconchaindata"
       - "${DIVA_DATA_FOLDER:-.}/geth/config:/opt/config"
     ports:
       - "13000:13000/tcp"
