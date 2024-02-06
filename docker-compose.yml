@@ -130,8 +130,8 @@ services:
         "--execution-endpoint=http://geth:8551",
         "--accept-terms-of-use",
         "--p2p-denylist=private",
-        "--checkpoint-sync-url=https://goerli.beaconstate.ethstaker.cc",
-        "--genesis-beacon-api-url=https://goerli.beaconstate.ethstaker.cc",
+        "--checkpoint-sync-url=https://checkpoint-sync.goerli.ethpandaops.io",
+        "--genesis-beacon-api-url=https://checkpoint-sync.goerli.ethpandaops.io",
         "--rpc-host=0.0.0.0",
         "--grpc-gateway-host=0.0.0.0",
         "--monitoring-host=0.0.0.0"
