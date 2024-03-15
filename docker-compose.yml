@@ -16,14 +16,15 @@ services:
       - '--tracing'
       - '--log-level=debug'
       - '--swagger-ui-enabled'
-      - '--contract=0xf73280D617AB4BDff2558adcD1a1659ccD1B4fF9'
+      - '--contract=0x703848F4c85f18e3acd8196c8eC91eb0b7Bd0797'
       - '--master-key=${DIVA_API_KEY}'
-      - '--genesis-time=1616508000'
-      - '--gvr=0x043db0d9a83813551ee2f33450d23797757d430911a9320530ad8a0eabc43efb'
-      - '--genesis-fork-version=0x00001020'
-      - '--current-fork-version=0x04001020'
-      - '--deposit-contract=0xff50ed3d0ec03ac01d4c79aad74928bff48a7b2b'
-      - '--chain-id=5'
+      - '--genesis-time=${DIVA_GT}'
+      - '--gvr=${CHAIN_GVR}'
+      - '--genesis-fork-version=${CHAIN_GFV}'
+      - '--current-fork-version=${CHAIN_CFV}'
+      - '--deposit-contract=${CHAIN_DC}'
+      - '--chain-id=${CHAIN_ID}'
+      - '--bootnode-address=/ip4/3.79.230.203/tcp/5050/p2p/16Uiu2HAmUqZCVYwUqqxCx52onMurX4cfdszKHJKBxD6oRjJpaxQ4,/ip4/3.71.81.235/tcp/5050/p2p/16Uiu2HAmUPpNwjuAEzAbnJxDXLH1C1MmH148Poru2N4mmJXDPUbZ,/ip4/157.90.30.135/tcp/5050/p2p/16Uiu2HAmGk25ubS2vmVb34Fk1bu2iSzrG8zoXTeZCGyNqzLMBsea'
     environment:
       - DIVA_VAULT_PASSWORD=${DIVA_VAULT_PASSWORD}
       - OTEL_EXPORTER_JAEGER_AGENT_HOST=jaeger
@@ -75,7 +76,7 @@ services:
       - SYNC_PERIOD=600
 
   operator-ui:
-    image: diva/operator-ui:${OPERATOR_UI_VERSION:-v24.1.1}
+    image: diva/operator-ui:v24.3.0
     platform: linux/amd64
     container_name: operator-ui
     restart: unless-stopped
@@ -92,7 +93,7 @@ services:
     stop_grace_period: 1m
     command:
       [
-        "--goerli",
+        "--holesky",
         "--http",
         "--http.api=eth,net,engine,web3",
         "--http.addr=0.0.0.0",
@@ -113,7 +114,7 @@ services:
       - "30303:30303/udp"
 
   beacon:
-    image: gcr.io/prysmaticlabs/prysm/beacon-chain:v4.2.1-rc.0
+    image: gcr.io/prysmaticlabs/prysm/beacon-chain:v5.0.1
     user: root
     container_name: beacon
     profiles:
@@ -123,15 +124,15 @@ services:
       - geth
     command:
       [
-        "--goerli",
+        "--holesky",
         "--genesis-state=/opt/prysm/data/genesis.ssz",
         "--jwt-secret=/opt/config/jwt",
         "--suggested-fee-recipient=0x3660650755B12555BBAc2284c2391ccBB4EBFDD6",
         "--execution-endpoint=http://geth:8551",
         "--accept-terms-of-use",
         "--p2p-denylist=private",
-        "--checkpoint-sync-url=https://checkpoint-sync.goerli.ethpandaops.io",
-        "--genesis-beacon-api-url=https://checkpoint-sync.goerli.ethpandaops.io",
+        "--checkpoint-sync-url=https://checkpoint-sync.holesky.ethpandaops.io",
+        "--genesis-beacon-api-url=https://checkpoint-sync.holesky.ethpandaops.io",
         "--rpc-host=0.0.0.0",
         "--grpc-gateway-host=0.0.0.0",
         "--monitoring-host=0.0.0.0"

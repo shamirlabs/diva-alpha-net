@@ -1,8 +1,8 @@
 <br />
 <div align="center">
-  <a href="#">
-    <img src="https://diva.community/metalogo.png" alt="Logo" width="200">
-  </a>
+  <h1 align="center">
+    DIVA
+  </h1>
   <h2 align="center">
     Liquid Staking protocol powered by Distributed Validators
   </h2>
