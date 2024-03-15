@@ -24,7 +24,7 @@ services:
       - '--current-fork-version=${CHAIN_CFV}'
       - '--deposit-contract=${CHAIN_DC}'
       - '--chain-id=${CHAIN_ID}'
-      - '--bootnode-address=/ip4/3.79.230.203/tcp/5050/p2p/16Uiu2HAkzzNtQBuv2BXwrFtSx71Bb43eMvKaDRP4ZTHccUgGcJri'
+      - '--bootnode-address=/ip4/3.79.230.203/tcp/5050/p2p/16Uiu2HAmUqZCVYwUqqxCx52onMurX4cfdszKHJKBxD6oRjJpaxQ4,/ip4/3.71.81.235/tcp/5050/p2p/16Uiu2HAmUPpNwjuAEzAbnJxDXLH1C1MmH148Poru2N4mmJXDPUbZ,/ip4/157.90.30.135/tcp/5050/p2p/16Uiu2HAmGk25ubS2vmVb34Fk1bu2iSzrG8zoXTeZCGyNqzLMBsea'
     environment:
       - DIVA_VAULT_PASSWORD=${DIVA_VAULT_PASSWORD}
       - OTEL_EXPORTER_JAEGER_AGENT_HOST=jaeger
