@@ -159,7 +159,7 @@ services:
       - ${DIVA_DATA_FOLDER:-.}/prometheus/data:/prometheus
 
   node-exporter:
-    image: prom/node-exporter:latest
+    image: prom/node-exporter:v1.7.0
     container_name: node-exporter
     profiles:
       - telemetry
