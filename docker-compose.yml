@@ -36,7 +36,7 @@ services:
       - "30000:30000"
 
   validator:
-    image: gcr.io/prysmaticlabs/prysm/validator:stable
+    image: gcr.io/prysmaticlabs/prysm/validator:v5.0.1
     platform: linux/amd64
     container_name: validator
     hostname: validator
@@ -85,7 +85,7 @@ services:
 
   # Ethereum clients
   geth:
-    image: ethereum/client-go:stable
+    image: ethereum/client-go:v1.13.14
     container_name: geth
     profiles:
       - clients
@@ -146,7 +146,7 @@ services:
 
   # Telemetry  
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v2.50.1
     user: root
     container_name: prometheus
     profiles:
@@ -187,7 +187,7 @@ services:
 
   # Metrics
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:v10.2.5
     user: root
     container_name: grafana
     profiles:
