@@ -187,7 +187,7 @@ services:
 
   # Metrics
   grafana:
-    image: grafana/grafana:v10.2.5
+    image: grafana/grafana:10.2.5
     user: root
     container_name: grafana
     profiles:
