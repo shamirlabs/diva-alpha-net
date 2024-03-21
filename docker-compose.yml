@@ -3,7 +3,7 @@ version: '3.8'
 services:
 
   diva:
-    image: diva/diva:${DIVA_VERSION:-v24.1.0}
+    image: diva/diva:v24.1.0
     platform: linux/amd64
     container_name: diva
     hostname: diva
@@ -63,7 +63,7 @@ services:
           - vc-rkm
 
   reloader:
-    image: diva/reloader:${RELOADER_VERSION:-v23.8.0}
+    image: diva/reloader:v23.8.0
     platform: linux/amd64
     container_name: reloader
     hostname: reloader
@@ -76,7 +76,7 @@ services:
       - SYNC_PERIOD=600
 
   operator-ui:
-    image: diva/operator-ui:v24.3.1
+    image: diva/operator-ui:v24.3.2
     platform: linux/amd64
     container_name: operator-ui
     restart: unless-stopped
@@ -166,7 +166,7 @@ services:
     restart: always
 
   jaeger:
-    image: diva/jaeger:${JAEGER_VERSION:-v23.8.0}
+    image: diva/jaeger:v23.8.0
     platform: linux/amd64
     container_name: jaeger
     profiles:
@@ -174,7 +174,7 @@ services:
     restart: unless-stopped
 
   vector:
-    image: diva/vector:${VECTOR_VERSION:-v23.8.0}
+    image: diva/vector:v23.8.0
     platform: linux/amd64
     container_name: vector
     restart: unless-stopped
