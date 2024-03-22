@@ -47,7 +47,7 @@ while [ true ]; do
             -H "accept: application/json" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $VALIDATOR_RKM_API_TOKEN" \
-            -d "{\"remote_keys\":[{\"pubkey\":\"$w3s_pub_key\"}]}" \
+            -d "{\"remote_keys\":[{\"pubkey\":\"$w3s_pub_key\",\"url\":\"$DIVA_W3S_API\"}]}" \
             | jq .
 
             pub_key_index=$((pub_key_index+1))
