@@ -25,7 +25,7 @@ services:
       - --keymanager.port
       - "7500"
       - --network
-      - goerli
+      - holesky
       - --externalSigner.url
       - http://diva:9000
       - --externalSigner.fetch
@@ -55,7 +55,7 @@ services:
           sleep 1
           echo "Waiting for Lodestar to create keymanager auth token"
         done
-        cp /jwt/api-token.txt /jwt/auth-token
+        printf "\n$(cat /jwt/api-token.txt)" > /jwt/auth-token
         exec /bin/sh /reload.sh
 
   operator-ui:
