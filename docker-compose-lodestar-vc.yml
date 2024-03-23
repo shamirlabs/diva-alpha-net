@@ -8,7 +8,7 @@ services:
       service: diva
 
   validator:
-    image: chainsafe/lodestar:latest
+    image: chainsafe/lodestar:v1.17.0
     platform: linux/amd64
     container_name: validator
     hostname: validator
@@ -25,7 +25,7 @@ services:
       - --keymanager.port
       - "7500"
       - --network
-      - goerli
+      - holesky
       - --externalSigner.url
       - http://diva:9000
       - --externalSigner.fetch
@@ -37,7 +37,7 @@ services:
           - vc-rkm
 
   reloader:
-    image: diva/reloader:${RELOADER_VERSION:-v23.8.0}
+    image: diva/reloader:v24.3.0
     platform: linux/amd64
     container_name: reloader
     hostname: reloader
@@ -55,7 +55,7 @@ services:
           sleep 1
           echo "Waiting for Lodestar to create keymanager auth token"
         done
-        cp /jwt/api-token.txt /jwt/auth-token
+        printf "\n$(cat /jwt/api-token.txt)" > /jwt/auth-token
         exec /bin/sh /reload.sh
 
   operator-ui:
