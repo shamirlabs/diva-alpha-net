@@ -37,7 +37,7 @@ services:
           - vc-rkm
 
   reloader:
-    image: diva/reloader:v23.8.0
+    image: diva/reloader:v24.3.0
     platform: linux/amd64
     container_name: reloader
     hostname: reloader
