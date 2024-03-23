@@ -8,7 +8,7 @@ services:
       service: diva
 
   validator:
-    image: chainsafe/lodestar:latest
+    image: chainsafe/lodestar:v1.17.0
     platform: linux/amd64
     container_name: validator
     hostname: validator
@@ -37,7 +37,7 @@ services:
           - vc-rkm
 
   reloader:
-    image: diva/reloader:${RELOADER_VERSION:-v23.8.0}
+    image: diva/reloader:v23.8.0
     platform: linux/amd64
     container_name: reloader
     hostname: reloader
